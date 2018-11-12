@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		907F086421812DBD00EE752A /* CollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 907F086321812DBD00EE752A /* CollectionViewCells.swift */; };
+		90E0886F2181288D00CF8068 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E0886E2181288D00CF8068 /* AppDelegate.swift */; };
+		90E088712181288D00CF8068 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E088702181288D00CF8068 /* ViewController.swift */; };
+		90E088742181288D00CF8068 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90E088722181288D00CF8068 /* Main.storyboard */; };
+		90E088762181288D00CF8068 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90E088752181288D00CF8068 /* Assets.xcassets */; };
+		90E088792181288D00CF8068 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90E088772181288D00CF8068 /* LaunchScreen.storyboard */; };
+		90E088842181288D00CF8068 /* EE149SmartWatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E088832181288D00CF8068 /* EE149SmartWatchTests.swift */; };
+		90E0888F2181288D00CF8068 /* EE149SmartWatchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E0888E2181288D00CF8068 /* EE149SmartWatchUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		90E088802181288D00CF8068 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90E088632181288D00CF8068 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 90E0886A2181288D00CF8068;
+			remoteInfo = EE149SmartWatch;
+		};
+		90E0888B2181288D00CF8068 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90E088632181288D00CF8068 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 90E0886A2181288D00CF8068;
+			remoteInfo = EE149SmartWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		907F086321812DBD00EE752A /* CollectionViewCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCells.swift; sourceTree = "<group>"; };
+		90E0886B2181288D00CF8068 /* EE149SmartWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EE149SmartWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		90E0886E2181288D00CF8068 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		90E088702181288D00CF8068 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		90E088732181288D00CF8068 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		90E088752181288D00CF8068 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		90E088782181288D00CF8068 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		90E0887A2181288D00CF8068 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		90E0887F2181288D00CF8068 /* EE149SmartWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EE149SmartWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		90E088832181288D00CF8068 /* EE149SmartWatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EE149SmartWatchTests.swift; sourceTree = "<group>"; };
+		90E088852181288D00CF8068 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		90E0888A2181288D00CF8068 /* EE149SmartWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EE149SmartWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		90E0888E2181288D00CF8068 /* EE149SmartWatchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EE149SmartWatchUITests.swift; sourceTree = "<group>"; };
+		90E088902181288D00CF8068 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		90E088682181288D00CF8068 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E0887C2181288D00CF8068 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E088872181288D00CF8068 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		90E088622181288D00CF8068 = {
+			isa = PBXGroup;
+			children = (
+				90E0886D2181288D00CF8068 /* EE149SmartWatch */,
+				90E088822181288D00CF8068 /* EE149SmartWatchTests */,
+				90E0888D2181288D00CF8068 /* EE149SmartWatchUITests */,
+				90E0886C2181288D00CF8068 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		90E0886C2181288D00CF8068 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				90E0886B2181288D00CF8068 /* EE149SmartWatch.app */,
+				90E0887F2181288D00CF8068 /* EE149SmartWatchTests.xctest */,
+				90E0888A2181288D00CF8068 /* EE149SmartWatchUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		90E0886D2181288D00CF8068 /* EE149SmartWatch */ = {
+			isa = PBXGroup;
+			children = (
+				90E0886E2181288D00CF8068 /* AppDelegate.swift */,
+				90E088702181288D00CF8068 /* ViewController.swift */,
+				907F086321812DBD00EE752A /* CollectionViewCells.swift */,
+				90E088722181288D00CF8068 /* Main.storyboard */,
+				90E088752181288D00CF8068 /* Assets.xcassets */,
+				90E088772181288D00CF8068 /* LaunchScreen.storyboard */,
+				90E0887A2181288D00CF8068 /* Info.plist */,
+			);
+			path = EE149SmartWatch;
+			sourceTree = "<group>";
+		};
+		90E088822181288D00CF8068 /* EE149SmartWatchTests */ = {
+			isa = PBXGroup;
+			children = (
+				90E088832181288D00CF8068 /* EE149SmartWatchTests.swift */,
+				90E088852181288D00CF8068 /* Info.plist */,
+			);
+			path = EE149SmartWatchTests;
+			sourceTree = "<group>";
+		};
+		90E0888D2181288D00CF8068 /* EE149SmartWatchUITests */ = {
+			isa = PBXGroup;
+			children = (
+				90E0888E2181288D00CF8068 /* EE149SmartWatchUITests.swift */,
+				90E088902181288D00CF8068 /* Info.plist */,
+			);
+			path = EE149SmartWatchUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		90E0886A2181288D00CF8068 /* EE149SmartWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90E088932181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatch" */;
+			buildPhases = (
+				90E088672181288D00CF8068 /* Sources */,
+				90E088682181288D00CF8068 /* Frameworks */,
+				90E088692181288D00CF8068 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EE149SmartWatch;
+			productName = EE149SmartWatch;
+			productReference = 90E0886B2181288D00CF8068 /* EE149SmartWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		90E0887E2181288D00CF8068 /* EE149SmartWatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90E088962181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatchTests" */;
+			buildPhases = (
+				90E0887B2181288D00CF8068 /* Sources */,
+				90E0887C2181288D00CF8068 /* Frameworks */,
+				90E0887D2181288D00CF8068 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				90E088812181288D00CF8068 /* PBXTargetDependency */,
+			);
+			name = EE149SmartWatchTests;
+			productName = EE149SmartWatchTests;
+			productReference = 90E0887F2181288D00CF8068 /* EE149SmartWatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		90E088892181288D00CF8068 /* EE149SmartWatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90E088992181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatchUITests" */;
+			buildPhases = (
+				90E088862181288D00CF8068 /* Sources */,
+				90E088872181288D00CF8068 /* Frameworks */,
+				90E088882181288D00CF8068 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				90E0888C2181288D00CF8068 /* PBXTargetDependency */,
+			);
+			name = EE149SmartWatchUITests;
+			productName = EE149SmartWatchUITests;
+			productReference = 90E0888A2181288D00CF8068 /* EE149SmartWatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		90E088632181288D00CF8068 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0920;
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = Michael;
+				TargetAttributes = {
+					90E0886A2181288D00CF8068 = {
+						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1010;
+						ProvisioningStyle = Automatic;
+					};
+					90E0887E2181288D00CF8068 = {
+						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1010;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 90E0886A2181288D00CF8068;
+					};
+					90E088892181288D00CF8068 = {
+						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1010;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 90E0886A2181288D00CF8068;
+					};
+				};
+			};
+			buildConfigurationList = 90E088662181288D00CF8068 /* Build configuration list for PBXProject "EE149SmartWatch" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 90E088622181288D00CF8068;
+			productRefGroup = 90E0886C2181288D00CF8068 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				90E0886A2181288D00CF8068 /* EE149SmartWatch */,
+				90E0887E2181288D00CF8068 /* EE149SmartWatchTests */,
+				90E088892181288D00CF8068 /* EE149SmartWatchUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		90E088692181288D00CF8068 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E088792181288D00CF8068 /* LaunchScreen.storyboard in Resources */,
+				90E088762181288D00CF8068 /* Assets.xcassets in Resources */,
+				90E088742181288D00CF8068 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E0887D2181288D00CF8068 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E088882181288D00CF8068 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		90E088672181288D00CF8068 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E088712181288D00CF8068 /* ViewController.swift in Sources */,
+				907F086421812DBD00EE752A /* CollectionViewCells.swift in Sources */,
+				90E0886F2181288D00CF8068 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E0887B2181288D00CF8068 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E088842181288D00CF8068 /* EE149SmartWatchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90E088862181288D00CF8068 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90E0888F2181288D00CF8068 /* EE149SmartWatchUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		90E088812181288D00CF8068 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 90E0886A2181288D00CF8068 /* EE149SmartWatch */;
+			targetProxy = 90E088802181288D00CF8068 /* PBXContainerItemProxy */;
+		};
+		90E0888C2181288D00CF8068 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 90E0886A2181288D00CF8068 /* EE149SmartWatch */;
+			targetProxy = 90E0888B2181288D00CF8068 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		90E088722181288D00CF8068 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				90E088732181288D00CF8068 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		90E088772181288D00CF8068 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				90E088782181288D00CF8068 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		90E088912181288D00CF8068 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		90E088922181288D00CF8068 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		90E088942181288D00CF8068 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "arm64 armv7 armv7s arm64e";
+			};
+			name = Debug;
+		};
+		90E088952181288D00CF8068 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "arm64 armv7 armv7s arm64e";
+			};
+			name = Release;
+		};
+		90E088972181288D00CF8068 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatchTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EE149SmartWatch.app/EE149SmartWatch";
+			};
+			name = Debug;
+		};
+		90E088982181288D00CF8068 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatchTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EE149SmartWatch.app/EE149SmartWatch";
+			};
+			name = Release;
+		};
+		90E0889A2181288D00CF8068 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatchUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatchUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = EE149SmartWatch;
+			};
+			name = Debug;
+		};
+		90E0889B2181288D00CF8068 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7WY88RT397;
+				INFOPLIST_FILE = EE149SmartWatchUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.hyunlee.EE149SmartWatchUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = EE149SmartWatch;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		90E088662181288D00CF8068 /* Build configuration list for PBXProject "EE149SmartWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E088912181288D00CF8068 /* Debug */,
+				90E088922181288D00CF8068 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90E088932181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E088942181288D00CF8068 /* Debug */,
+				90E088952181288D00CF8068 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90E088962181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E088972181288D00CF8068 /* Debug */,
+				90E088982181288D00CF8068 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90E088992181288D00CF8068 /* Build configuration list for PBXNativeTarget "EE149SmartWatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90E0889A2181288D00CF8068 /* Debug */,
+				90E0889B2181288D00CF8068 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 90E088632181288D00CF8068 /* Project object */;
+}
