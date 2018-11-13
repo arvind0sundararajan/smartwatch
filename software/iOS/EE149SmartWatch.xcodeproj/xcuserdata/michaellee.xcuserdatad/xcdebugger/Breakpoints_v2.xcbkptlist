@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EE149SmartWatch/ViewController.swift"
-            timestampString = "563684886.010229"
+            timestampString = "563766990.863608"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "startTimer(sender:)"
             landmarkType = "7">
          </BreakpointContent>

@@ -24,6 +24,25 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return array
     }()
     
+    let supportedServices : [CBUUID] = {
+        let servicesUUID = [
+            "BA49D63B-6FF0-4886-857B-43E0A95EB5EF"
+        ]
+        
+        var services = [CBUUID]()
+        for uuid in servicesUUID {
+            let service = CBUUID(string: uuid)
+            services.append(service)
+        }
+        return services
+    }()
+    
+    var buckler : CBPeripheral! {
+        didSet {
+            manager.connect(buckler, options: nil)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -138,7 +157,26 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        print("\(peripheral.name)")
+        
+        if let manuData = advertisementData[CBAdvertisementDataManufacturerDataKey],
+            let data = manuData as? Data {
+            let dataBytes = [UInt8](data)
+            if dataBytes[0] == 0xe0 && dataBytes[1] == 0x02 && // LAB11 COMPANY IDENTIFIER
+                dataBytes[2] == 0x23
+            {
+                // Buckler found
+                print(dataBytes[3..<dataBytes.count])
+                buckler = peripheral
+            }
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Connected")
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("Disconnected")
     }
     
 }
