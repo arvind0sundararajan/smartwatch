@@ -158,6 +158,10 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         
+        if let name = peripheral.name {
+            printToDebug(str: name)
+        }
+        
         if let manuData = advertisementData[CBAdvertisementDataManufacturerDataKey],
             let data = manuData as? Data {
             let dataBytes = [UInt8](data)
