@@ -83,8 +83,10 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
-#include "ble_cus.h"
+// #include "smartwatch_ble_service.h"
 #include "mpu9250.h"
+
+#include "smartwatch_test_service.h"
 
 
 #define BUCKLER_SENSORS_SCL     NRF_GPIO_PIN_MAP(0,19)
@@ -124,6 +126,7 @@
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 
+
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 
@@ -131,21 +134,21 @@ NRF_BLE_QWR_DEF(m_qwr);                                                         
 // Replace?
 /* How exactly does passing in m_cus work? Shouldn't I have to pass in the specific reference to the specific context? 
  */
-static ble_cus_t m_cus;                                                                            
-NRF_SDH_BLE_OBSERVER(m_cus_ob,                                                                 
-                     BLE_HRS_BLE_OBSERVER_PRIO,                                                     
-                     ble_cus_on_ble_evt, &m_cus);
+// static ble_cus_t m_cus;                                                                            
+// NRF_SDH_BLE_OBSERVER(m_cus_ob,                                                                 
+//                      BLE_HRS_BLE_OBSERVER_PRIO,                                                     
+//                      ble_cus_on_ble_evt, &m_cus);
 
 
 
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
-APP_TIMER_DEF(m_notification_timer_id);
+// APP_TIMER_DEF(m_notification_timer_id);
 
 // I2C manager
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
-static uint8_t m_custom_value = 0;
+// static uint8_t m_custom_value = 0;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -158,6 +161,9 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 //{
 //    {CUSTOM_SERVICE_UUID, BLE_UUID_TYPE_VENDOR_BEGIN }
 //};
+
+/* Services */
+smartwatch_ble_service* test_service;
 
 
 static void advertising_start(bool erase_bonds);
@@ -284,31 +290,31 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  * @param[in] p_context  Pointer used for passing some arbitrary information (context) from the
  *                       app_start_timer() call to the timeout handler.
  */
-static void notification_timeout_handler(void * p_context)
-{
-    UNUSED_PARAMETER(p_context);
-    ret_code_t err_code;
+// static void notification_timeout_handler(void * p_context)
+// {
+    // UNUSED_PARAMETER(p_context);
+    // ret_code_t err_code;
     
-    // Increment the value of m_custom_value before nortifing it.
-    m_custom_value++;
+    // // Increment the value of m_custom_value before nortifing it.
+    // m_custom_value++;
     
-    err_code = ble_cus_custom_value_update(&m_cus, m_custom_value);
-    APP_ERROR_CHECK(err_code);
-}
+    // err_code = ble_cus_custom_value_update(&m_cus, m_custom_value);
+    // APP_ERROR_CHECK(err_code);
+// }
 
 /**@brief Function for the Timer initialization.
  *
  * @details Initializes the timer module. This creates and starts application timers.
  */
-static void timers_init(void)
-{
+// static void timers_init(void)
+// {
     // Initialize timer module.
-    ret_code_t err_code = app_timer_init();
-    APP_ERROR_CHECK(err_code);
+    // ret_code_t err_code = app_timer_init();
+    // APP_ERROR_CHECK(err_code);
 
-    // Create timers.
-    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
-    APP_ERROR_CHECK(err_code);
+    // // Create timers.
+    // err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
+    // APP_ERROR_CHECK(err_code);
 
     /* YOUR_JOB: Create any timers to be used by the application.
                  Below is an example of how to create a timer.
@@ -317,7 +323,7 @@ static void timers_init(void)
        ret_code_t err_code;
        err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
        APP_ERROR_CHECK(err_code); */
-}
+// }
 
 
 /**@brief Function for the GAP initialization.
@@ -409,36 +415,36 @@ static void on_yys_evt(ble_yy_service_t     * p_yy_service,
  * @param[in]   p_evt          Event received from the Custom Service.
  *
  */
-static void on_cus_evt(ble_cus_t     * p_cus_service,
-                       ble_cus_evt_t * p_evt)
-{
-    ret_code_t err_code;
+// static void on_cus_evt(ble_cus_t     * p_cus_service,
+//                        ble_cus_evt_t * p_evt)
+// {
+//     ret_code_t err_code;
     
-    switch(p_evt->evt_type)
-    {
-        case BLE_CUS_EVT_NOTIFICATION_ENABLED:
+//     switch(p_evt->evt_type)
+//     {
+//         case BLE_CUS_EVT_NOTIFICATION_ENABLED:
             
-             err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
-             APP_ERROR_CHECK(err_code);
-             break;
+//              err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
+//              APP_ERROR_CHECK(err_code);
+//              break;
 
-        case BLE_CUS_EVT_NOTIFICATION_DISABLED:
+//         case BLE_CUS_EVT_NOTIFICATION_DISABLED:
 
-            err_code = app_timer_stop(m_notification_timer_id);
-            APP_ERROR_CHECK(err_code);
-            break;
+//             err_code = app_timer_stop(m_notification_timer_id);
+//             APP_ERROR_CHECK(err_code);
+//             break;
 
-        case BLE_CUS_EVT_CONNECTED:
-            break;
+//         case BLE_CUS_EVT_CONNECTED:
+//             break;
 
-        case BLE_CUS_EVT_DISCONNECTED:
-              break;
+//         case BLE_CUS_EVT_DISCONNECTED:
+//               break;
 
-        default:
-              // No implementation needed.
-              break;
-    }
-}
+//         default:
+//               // No implementation needed.
+//               break;
+//     }
+// }
 
 static void qwr_init(void) {
     ret_code_t          err_code;
@@ -455,19 +461,35 @@ static void qwr_init(void) {
  */
 static void services_init(void)
 {
+
+    ble_service_params test_service_params_000 = {
+        .base_service_uuid = 0x1400,
+        .evt_handler = test_service_evt_handler,
+        .uuid = {{0xBC, 0x8A, 0xBF, 0x45, 0xCA, 0x05, 0x50, 0xBA, 0x40, 0x42, 0xB0, 0x00, 0xC9, 0xAD, 0x64, 0xF3}}
+    };
+    test_service = smartwatch_ble_service_init(&test_service_params_000);
+    NRF_SDH_BLE_OBSERVER(test_service_obs, 
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        test_service_evt_handler,
+        NULL
+    );
+    UNUSED_PARAMETER(test_service);
+
+    // test_service = smartwatch_ble_service_init(&test_service_params_000);
+
     // TODO: Abstract this away
-    ret_code_t          err_code;
-    ble_cus_init_t      cus_init = {0};
+    // ret_code_t          err_code;
+    // ble_cus_init_t      cus_init = {0};
 
      // Initialize CUS Service init structure to zero.
-    cus_init.evt_handler                = on_cus_evt;
+    // cus_init.evt_handler                = on_cus_evt;
 
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.cccd_write_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
+    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.cccd_write_perm);
+    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
+    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
 
-    err_code = ble_cus_init(&m_cus, &cus_init);
-    APP_ERROR_CHECK(err_code);
+    // err_code = ble_cus_init(&m_cus, &cus_init);
+    // APP_ERROR_CHECK(err_code);
                 
     /* YOUR_JOB: Add code to initialize the services used by the application.
        ble_xxs_init_t                     xxs_init;
@@ -893,7 +915,7 @@ int main(void)
     log_init();
     printf("Log started!\n");
 
-    timers_init();
+    // timers_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
