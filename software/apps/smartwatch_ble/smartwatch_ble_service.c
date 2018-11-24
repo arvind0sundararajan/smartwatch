@@ -7,39 +7,69 @@
 #include "boards.h"
 #include "nrf_log.h"
 
-smartwatch_ble_service* smartwatch_ble_service_init(ble_service_params* ble_params) {
+uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_ble_service* service) {
 	if (ble_params == NULL) {
-		return NULL;
+		return NRF_ERROR_NULL;
 	}
 
-	smartwatch_ble_service* service = {0};
+	NRF_LOG_INFO("%x", ble_params->base_service_uuid);
+
+	NRF_LOG_INFO("Start ble esrvice init.");
+
+	NRF_LOG_INFO("initialize stuff1.");
 	service->evt_handler = ble_params->evt_handler;
+	NRF_LOG_INFO("initialize stuff2.");
 	service->service_handle = 0; // To be set later
+	NRF_LOG_INFO("initialize stuff3.");
 	service->base_service_uuid = ble_params->base_service_uuid;
+	NRF_LOG_INFO("initialize stuff4.");
 
 	// TODO Create a "connection" handle
-	// TODO Set an observer
 
 	uint32_t err_code;
 	ble_uuid_t ble_uuid;
 
+	NRF_LOG_INFO("initialize stuff before uuid_vs_add. 2");
+
 	ble_uuid128_t base_uuid = ble_params->uuid;
 	err_code = sd_ble_uuid_vs_add(&base_uuid, &service->uuid);
-	if (err_code != NRF_SUCCESS) {
-		return NULL;
+
+	if (err_code == NRF_ERROR_INVALID_ADDR) {
+		NRF_LOG_INFO("NRF_ERROR_INVALID_ADDR");
 	}
+	if (err_code == NRF_ERROR_FORBIDDEN) {
+		NRF_LOG_INFO("NRF_ERROR)NRF_ERROR_FORBIDDEN");
+	}
+	if (err_code == NRF_ERROR_NO_MEM) {
+		NRF_LOG_INFO("NRF_ERROR_NO_MEM");
+	}
+
+	if (err_code != NRF_SUCCESS) {
+		NRF_LOG_INFO("error code %d", err_code);
+		return NRF_ERROR_NULL;
+	}
+
+	NRF_LOG_INFO("stuff added.");
 
 	ble_uuid.type = service->uuid;
 	ble_uuid.uuid = service->base_service_uuid;
 
+	NRF_LOG_INFO("%d", ble_uuid.type);
+	NRF_LOG_INFO("%d", ble_uuid.uuid);
+
 	err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &service->service_handle);
+	
 	if (err_code != NRF_SUCCESS) {
-		return NULL;
+		NRF_LOG_INFO("err_code")
+		NRF_LOG_INFO("%d", err_code);
+		return NRF_ERROR_NULL;
 	}
 
 	err_code = smartwatch_ble_service_add_char(service);
+
+	NRF_LOG_INFO("characteristic added.");
 	if (err_code != NRF_SUCCESS) {
-		return NULL;
+		return NRF_ERROR_NULL;
 	}
 
 	/* As of this point, service has several things that have not been set
@@ -47,7 +77,7 @@ smartwatch_ble_service* smartwatch_ble_service_init(ble_service_params* ble_para
 	   3. Timer id which should be set
 	 */
 
-	return service;
+	return NRF_SUCCESS;
 }
 
 uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {

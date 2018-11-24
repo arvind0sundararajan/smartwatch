@@ -87,6 +87,7 @@
 #include "mpu9250.h"
 
 #include "smartwatch_test_service.h"
+#include "smartwatch_test_service_2.h"
 
 
 #define BUCKLER_SENSORS_SCL     NRF_GPIO_PIN_MAP(0,19)
@@ -163,8 +164,8 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 //};
 
 /* Services */
-smartwatch_ble_service* test_service;
-
+smartwatch_ble_service test_service;
+smartwatch_ble_service test_service_2;
 
 static void advertising_start(bool erase_bonds);
 
@@ -292,10 +293,10 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  */
 // static void notification_timeout_handler(void * p_context)
 // {
-    // UNUSED_PARAMETER(p_context);
+//     UNUSED_PARAMETER(p_context);
     // ret_code_t err_code;
     
-    // // Increment the value of m_custom_value before nortifing it.
+    // Increment the value of m_custom_value before nortifing it.
     // m_custom_value++;
     
     // err_code = ble_cus_custom_value_update(&m_cus, m_custom_value);
@@ -306,24 +307,24 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  *
  * @details Initializes the timer module. This creates and starts application timers.
  */
-// static void timers_init(void)
-// {
+static void timers_init(void)
+{
     // Initialize timer module.
-    // ret_code_t err_code = app_timer_init();
-    // APP_ERROR_CHECK(err_code);
+    ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
 
-    // // Create timers.
+    // Create timers.
     // err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
     // APP_ERROR_CHECK(err_code);
 
-    /* YOUR_JOB: Create any timers to be used by the application.
-                 Below is an example of how to create a timer.
-                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
-                 one.
-       ret_code_t err_code;
-       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-       APP_ERROR_CHECK(err_code); */
-// }
+     // YOUR_JOB: Create any timers to be used by the application.
+     //             Below is an example of how to create a timer.
+     //             For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
+     //             one.
+     //   ret_code_t err_code;
+     //   err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
+     //   APP_ERROR_CHECK(err_code); 
+}
 
 
 /**@brief Function for the GAP initialization.
@@ -462,18 +463,32 @@ static void qwr_init(void) {
 static void services_init(void)
 {
 
-    ble_service_params test_service_params_000 = {
+    ble_service_params test_service_params = {
         .base_service_uuid = 0x1400,
         .evt_handler = test_service_evt_handler,
         .uuid = {{0xBC, 0x8A, 0xBF, 0x45, 0xCA, 0x05, 0x50, 0xBA, 0x40, 0x42, 0xB0, 0x00, 0xC9, 0xAD, 0x64, 0xF3}}
     };
-    test_service = smartwatch_ble_service_init(&test_service_params_000);
+    smartwatch_ble_service_init(&test_service_params, &test_service);
     NRF_SDH_BLE_OBSERVER(test_service_obs, 
         BLE_HRS_BLE_OBSERVER_PRIO,
         test_service_evt_handler,
-        NULL
+        &test_service
     );
-    UNUSED_PARAMETER(test_service);
+
+    ble_service_params test_service_2_params = {
+        .base_service_uuid = 0x1500,
+        .evt_handler = test_service_2_evt_handler,
+        .uuid = {
+            {0x20, 0x73, 0x03, 0xc7, 0x3d, 0x90, 0xfa, 0x9c, 0x40, 0x45, 0xf6, 0xea, 0x8e, 0x2e, 0x85, 0xc4}
+            }
+    };
+    smartwatch_ble_service_init(&test_service_2_params, &test_service_2);
+    NRF_SDH_BLE_OBSERVER(test_service_2_obs, 
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        test_service_2_evt_handler,
+        &test_service_2
+    );
+    
 
     // test_service = smartwatch_ble_service_init(&test_service_params_000);
 
@@ -843,6 +858,8 @@ static void buttons_leds_init(bool * p_erase_bonds)
     ret_code_t err_code;
     bsp_event_t startup_event;
 
+    printf("%d", BSP_INIT_LEDS);
+
     err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
     APP_ERROR_CHECK(err_code);
 
@@ -915,7 +932,7 @@ int main(void)
     log_init();
     printf("Log started!\n");
 
-    // timers_init();
+    timers_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
