@@ -18,11 +18,11 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 
 	NRF_LOG_INFO("initialize stuff1.");
 	service->evt_handler = ble_params->evt_handler;
-	NRF_LOG_INFO("initialize stuff2.");
+	// NRF_LOG_INFO("initialize stuff2.");
 	service->service_handle = 0; // To be set later
-	NRF_LOG_INFO("initialize stuff3.");
+	// NRF_LOG_INFO("initialize stuff3.");
 	service->base_service_uuid = ble_params->base_service_uuid;
-	NRF_LOG_INFO("initialize stuff4.");
+	// NRF_LOG_INFO("initialize stuff4.");
 
 	// TODO Create a "connection" handle
 

@@ -166,6 +166,8 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 /* Services */
 smartwatch_ble_service test_service;
 smartwatch_ble_service test_service_2;
+smartwatch_ble_service test_service_3;
+
 
 static void advertising_start(bool erase_bonds);
 
@@ -487,6 +489,22 @@ static void services_init(void)
         BLE_HRS_BLE_OBSERVER_PRIO,
         test_service_2_evt_handler,
         &test_service_2
+    );
+
+    ble_service_params test_service_3_params = {
+        .base_service_uuid = 0x1600,
+        .evt_handler = test_service_2_evt_handler,
+        .uuid = {
+           {0x8a, 0xa8, 0x63, 0x16, 0x77, 0x19,0xdd,0xb8, 0xae, 0x44,0x50,0x71, 0x7d,0x77,0x6d,0x6a }
+       }
+    };
+
+    
+    smartwatch_ble_service_init(&test_service_3_params, &test_service_3);
+    NRF_SDH_BLE_OBSERVER(test_service_3_obs, 
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        test_service_2_evt_handler,
+        &test_service_3
     );
     
 
