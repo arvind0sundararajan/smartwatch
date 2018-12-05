@@ -9,7 +9,7 @@
 #include "ble_srv_common.h"
 // #include "nrf_gpio.h"
 // #include "boards.h"
-// #include "nrf_log.h"
+#include "nrf_log.h"
 
 void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
@@ -17,11 +17,13 @@ void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
 	ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
+	NRF_LOG_INFO("%d", p_ble_evt->header.evt_id);
+
 	switch(p_ble_evt->header.evt_id) {
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
 		case BLE_GAP_EVT_CONNECTED:
-			printf("connected test service\n");
+			service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
 			break;
 		case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 			break;
@@ -31,8 +33,7 @@ void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 			break;
 		case BLE_GATTS_EVT_WRITE:
 			if (p_evt_write->handle == service->char_handle.value_handle) {
-				printf("Characteristic written to. Value: 0x%X (%d)\n", *p_evt_write->data, *p_evt_write->data);
-
+				NRF_LOG_INFO("\tCharacteristic written to. Value: 0x%X (%d)\n", *p_evt_write->data, *p_evt_write->data);
 			}
 			break;
 	}

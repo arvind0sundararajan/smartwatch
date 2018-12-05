@@ -131,25 +131,14 @@
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 
-
-// Replace?
-/* How exactly does passing in m_cus work? Shouldn't I have to pass in the specific reference to the specific context? 
- */
-// static ble_cus_t m_cus;                                                                            
-// NRF_SDH_BLE_OBSERVER(m_cus_ob,                                                                 
-//                      BLE_HRS_BLE_OBSERVER_PRIO,                                                     
-//                      ble_cus_on_ble_evt, &m_cus);
-
-
-
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
-// APP_TIMER_DEF(m_notification_timer_id);
+APP_TIMER_DEF(m_notification_timer_id);
 
 // I2C manager
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
-// static uint8_t m_custom_value = 0;
+static uint8_t m_custom_value = 0;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -187,7 +176,6 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
-
 
 /**@brief Function for handling Peer Manager events.
  *
@@ -293,17 +281,22 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
  * @param[in] p_context  Pointer used for passing some arbitrary information (context) from the
  *                       app_start_timer() call to the timeout handler.
  */
-// static void notification_timeout_handler(void * p_context)
-// {
-//     UNUSED_PARAMETER(p_context);
-    // ret_code_t err_code;
+static void notification_timeout_handler(void * p_context)
+{
+    UNUSED_PARAMETER(p_context);
+    ret_code_t err_code;
     
     // Increment the value of m_custom_value before nortifing it.
-    // m_custom_value++;
+    m_custom_value++;
+    NRF_LOG_INFO("timer handler %d", m_custom_value);
     
-    // err_code = ble_cus_custom_value_update(&m_cus, m_custom_value);
-    // APP_ERROR_CHECK(err_code);
-// }
+    if (test_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
+        err_code = smartwatch_ble_service_set_char_value(&test_service, m_custom_value);
+        APP_ERROR_CHECK(err_code);
+        err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
+        APP_ERROR_CHECK(err_code);
+    }
+}
 
 /**@brief Function for the Timer initialization.
  *
@@ -316,8 +309,8 @@ static void timers_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Create timers.
-    // err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
-    // APP_ERROR_CHECK(err_code);
+    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
+    APP_ERROR_CHECK(err_code);
 
      // YOUR_JOB: Create any timers to be used by the application.
      //             Below is an example of how to create a timer.
@@ -568,6 +561,9 @@ static void conn_params_init(void)
  */
 static void application_timers_start(void)
 {
+    ret_code_t err_code;
+    err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
+    APP_ERROR_CHECK(err_code);
     /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
        ret_code_t err_code;
        err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);

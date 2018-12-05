@@ -24,7 +24,7 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 	service->base_service_uuid = ble_params->base_service_uuid;
 	// NRF_LOG_INFO("initialize stuff4.");
 
-	// TODO Create a "connection" handle
+	service->conn_handle = BLE_CONN_HANDLE_INVALID;
 
 	uint32_t err_code;
 	ble_uuid_t ble_uuid;
@@ -151,7 +151,60 @@ uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {
     return NRF_SUCCESS;
 }
 
-void smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint8_t new_value) {
-	UNUSED_PARAMETER(new_value);
-	UNUSED_PARAMETER(ble_service);
+uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint8_t new_value) {
+	if (ble_service == NULL) {
+		return NRF_ERROR_NULL;
+	}
+
+	uint32_t err_code = NRF_SUCCESS;
+	ble_gatts_value_t gatts_value;
+
+	memset(&gatts_value, 0, sizeof(gatts_value));
+	gatts_value.len    = sizeof(uint8_t);
+	gatts_value.offset = 0;
+	gatts_value.p_value= &new_value;
+
+	err_code = sd_ble_gatts_value_set(ble_service->conn_handle, ble_service->char_handle.value_handle, &gatts_value);
+
+	// if (err_code == NRF_ERROR_INVALID_ADDR) {
+	// 	NRF_LOG_INFO("NRF_ERROR_INVALID_ADDR");
+	// }
+	// if (err_code == NRF_ERROR_INVALID_PARAM) {
+	// 	NRF_LOG_INFO("NRF_ERROR_INVALID_PARAM");
+	// }
+	// if (err_code == NRF_ERROR_NOT_FOUND) {
+	// 	NRF_LOG_INFO("NRF_ERROR_NOT_FOUND");
+	// }
+	// if (err_code == NRF_ERROR_DATA_SIZE) {
+	// 	NRF_LOG_INFO("NRF_ERROR_DATA_SIZE");
+	// }
+	// if (err_code == BLE_ERROR_INVALID_CONN_HANDLE) {
+	// 	NRF_LOG_INFO("BLE_ERROR_INVALID_CONN_HANDLE");
+	// }
+	// if (err_code == BLE_ERROR_GATTS_INVALID_ATTR_TYPE) {
+	// 	NRF_LOG_INFO("BLE_ERROR_GATTS_INVALID_ATTR_TYPE");
+	// }
+	if (err_code != NRF_SUCCESS) {
+		return err_code;
+	}
+
+
+
+	/* If Notifying */
+	if (ble_service->conn_handle != BLE_CONN_HANDLE_INVALID) {
+		ble_gatts_hvx_params_t hvx_params;
+		memset(&hvx_params, 0, sizeof(hvx_params));
+		hvx_params.handle = ble_service->char_handle.value_handle;
+		hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
+		hvx_params.offset = gatts_value.offset;
+		hvx_params.p_len = &gatts_value.len;
+		hvx_params.p_data= gatts_value.p_value;
+
+		sd_ble_gatts_hvx(ble_service->conn_handle, &hvx_params); // TODO: ERR_CODE?
+		NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code); 
+		NRF_LOG_INFO("%d", NRF_SUCCESS);
+
+	}
+
+	return err_code;
 }
