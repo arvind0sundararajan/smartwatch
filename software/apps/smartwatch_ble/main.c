@@ -506,46 +506,6 @@ static void services_init(void)
         test_service_2_evt_handler,
         &test_service_3
     );
-    
-
-    // test_service = smartwatch_ble_service_init(&test_service_params_000);
-
-    // TODO: Abstract this away
-    // ret_code_t          err_code;
-    // ble_cus_init_t      cus_init = {0};
-
-     // Initialize CUS Service init structure to zero.
-    // cus_init.evt_handler                = on_cus_evt;
-
-    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.cccd_write_perm);
-    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
-    // BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
-
-    // err_code = ble_cus_init(&m_cus, &cus_init);
-    // APP_ERROR_CHECK(err_code);
-                
-    /* YOUR_JOB: Add code to initialize the services used by the application.
-       ble_xxs_init_t                     xxs_init;
-       ble_yys_init_t                     yys_init;
-
-       // Initialize XXX Service.
-       memset(&xxs_init, 0, sizeof(xxs_init));
-
-       xxs_init.evt_handler                = NULL;
-       xxs_init.is_xxx_notify_supported    = true;
-       xxs_init.ble_xx_initial_value.level = 100;
-
-       err_code = ble_bas_init(&m_xxs, &xxs_init);
-       APP_ERROR_CHECK(err_code);
-
-       // Initialize YYY Service.
-       memset(&yys_init, 0, sizeof(yys_init));
-       yys_init.evt_handler                  = on_yys_evt;
-       yys_init.ble_yy_initial_value.counter = 0;
-
-       err_code = ble_yy_service_init(&yys_init, &yy_init);
-       APP_ERROR_CHECK(err_code);
-     */
 }
 
 
@@ -848,9 +808,26 @@ static void advertising_init(void)
 
     memset(&init, 0, sizeof(init));
 
+    uint8_t adv_manuf_data[10] = {0};    
+    uint8_array_t adv_manuf_data_array;
+    adv_manuf_data[0] = 0x23;
+    for (int i = 1; i < 10; i += 1) {
+        adv_manuf_data[i] = i;
+    }
+    adv_manuf_data_array.p_data = adv_manuf_data;
+    adv_manuf_data_array.size   = 10;
+
+
+    ble_advdata_manuf_data_t adv_payload;
+    adv_payload.company_identifier = 0x02E0;
+    adv_payload.data = adv_manuf_data_array;
+
+        // UNUSED_PARAMETER(adv_payload);
+
     init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     init.advdata.include_appearance      = false;
     init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    init.advdata.p_manuf_specific_data   = &adv_payload;
     //init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     //init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
