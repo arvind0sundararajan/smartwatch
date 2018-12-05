@@ -9,7 +9,7 @@
 import UIKit
 import CoreBluetooth
 
-class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CBCentralManagerDelegate {
+class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CBCentralManagerDelegate, CBPeripheralDelegate {
     private let cellId = "cellId"
     
     private let names = ["Steps", "Temperature", "Sensor3", "Sensor4"]
@@ -37,11 +37,16 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return services
     }()
     
+    var services = [CBService]()
+    
     var buckler : CBPeripheral! {
         didSet {
             manager.connect(buckler, options: nil)
+            buckler.delegate = self
         }
     }
+    
+    var timer = Timer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,6 +166,7 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         if let manuData = advertisementData[CBAdvertisementDataManufacturerDataKey],
             let data = manuData as? Data {
             let dataBytes = [UInt8](data)
+            print(dataBytes)
             if dataBytes[0] == 0xe0 && dataBytes[1] == 0x02 && // LAB11 COMPANY IDENTIFIER
                 dataBytes[2] == 0x23
             {
@@ -172,12 +178,61 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Connected")
+        peripheral.discoverServices(nil);
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        print("Disconnected")
+        if central.state == .poweredOn {
+            central.scanForPeripherals(withServices: nil, options: nil)
+        }
     }
+    
+    /** Peripheral Delegate **/
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        print("Discover Services")
+        if let discoveredServices = peripheral.services {
+            for service in discoveredServices {
+                print(service)
+                services.append(service)
+                peripheral.discoverCharacteristics(nil, for: service)
+            }
+        }
+        
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        print("Discovered Characteristics")
+        if let discoveredCharacteristics = service.characteristics {
+            for char in discoveredCharacteristics {
+                print(char)
+            }
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let readValue = characteristic.value {
+            print("Reading Values")
+            let valuesInt = [UInt8](readValue)
+            print(valuesInt)
+            if valuesInt[0] > 15 {
+                var dataToWrite = Data()
+                dataToWrite.append(0)
+                buckler.writeValue(dataToWrite, for: characteristic, type: .withResponse)
+            }
+        }
+    }
+    
+    /** Timer functions **/
+    @objc
+    func updateTimer() {
+        for service in services {
+            if let char = service.characteristics?[0] {
+                buckler.readValue(for: char)
+            }
+        }
+    }
+    
     
 }
 
