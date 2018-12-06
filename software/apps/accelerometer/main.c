@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "app_error.h"
 #include "nrf.h"
@@ -18,8 +19,16 @@
 #include "nrf_serial.h"
 #include "nrfx_gpiote.h"
 #include "nrfx_saadc.h"
+#include "nrf_calendar.h"
+#include "app_timer.h"
+#include "nrf_drv_clock.h"
 
 #include "buckler.h"
+
+/* Single shot timer used for interval after footstep */
+APP_TIMER_DEF(footstep_timer);
+/* Footstep indicator */
+bool was_footstep;
 
 // ADC channels
 #define X_CHANNEL 0
@@ -37,6 +46,10 @@ nrf_saadc_value_t sample_value (uint8_t channel) {
   ret_code_t error_code = nrfx_saadc_sample_convert(channel, &val);
   APP_ERROR_CHECK(error_code);
   return val;
+}
+
+static void footstep_handler(){
+  was_footstep = false;
 }
 
 int main (void) {
@@ -74,49 +87,90 @@ int main (void) {
   error_code = nrfx_saadc_channel_init(Z_CHANNEL, &channel_config);
   APP_ERROR_CHECK(error_code);
 
+  /*TIMER INTIALIZATION*/
+  uint32_t err_code;
+  err_code = nrf_drv_clock_init();
+  APP_ERROR_CHECK(err_code);
+  nrf_drv_clock_lfclk_request(NULL);
+  app_timer_init();
+  err_code = app_timer_create(&footstep_timer, APP_TIMER_MODE_SINGLE_SHOT, footstep_handler);
+  APP_ERROR_CHECK(err_code);
+
+
+
   // initialization complete
   printf("Buckler initialized!\n");
-  nrf_saadc_value_t x_velocity = 0;
-  nrf_saadc_value_t x_position = 0;
-  nrf_saadc_value_t max = 0;
-  nrf_saadc_value_t min = 400000;
-  nrf_saadc_value_t footstep_threshold = 20000;
+
+  uint32_t max = 0;
+  uint32_t min = UINT32_MAX;
+  uint32_t footstep_threshold = UINT32_MAX;
+  uint32_t average_value = 0;
   int no_of_footsteps = 0;
+  int print_counter = 0;
+  uint32_t cum_sum = 0;
+  uint32_t avg_sum = 0;
 
+  /* CALIBRATION */
+  // for(int i = 0; i < 200; i++){
+  //   for(int j = 0; j < 4; j++){
+  //     nrf_saadc_value_t x_val = sample_value(X_CHANNEL);
+  //     nrf_saadc_value_t y_val = sample_value(Y_CHANNEL);
+  //     nrf_saadc_value_t z_val = sample_value(Z_CHANNEL);
+  //     uint32_t cumulative_val = sqrt(pow(x_val,2) + pow(y_val,2) + pow(z_val,2));
+  //     cum_sum+=cumulative_val;
+  //   }
+  //   avg_sum = cum_sum/4;
+  //   if(avg_sum > max){
+  //     max = avg_sum;
+  //   }
+  //   if(avg_sum < min){
+  //     min = avg_sum;
+  //   }
+  //   footstep_threshold = (max + min)/2;
+  //   cum_sum = 0;
+  //   avg_sum = 0;
+  // }
 
-  // loop forever
   while (1) {
-    // sample analog inputs
-    nrf_saadc_value_t x_val = sample_value(X_CHANNEL);
-    nrf_saadc_value_t y_val = sample_value(Y_CHANNEL);
-    nrf_saadc_value_t z_val = sample_value(Z_CHANNEL);
-
-
-    nrf_saadc_value_t cumulative_val = sqrt(pow(x_val,2) + pow(y_val,2) + pow(z_val,2));
-    if(cumulative_val > footstep_threshold){
+    for(int i = 0; i < 4; i++){
+      // sample analog inputs
+      nrf_saadc_value_t x_val = sample_value(X_CHANNEL);
+      nrf_saadc_value_t y_val = sample_value(Y_CHANNEL);
+      nrf_saadc_value_t z_val = sample_value(Z_CHANNEL);
+      uint32_t cumulative_val = sqrt(pow(x_val,2) + pow(y_val,2) + pow(z_val,2));
+      cum_sum += cumulative_val;
+    }
+    avg_sum = cum_sum/4;
+    if(avg_sum > (3/2) * footstep_threshold && !was_footstep){
       no_of_footsteps++;
+      was_footstep = true;
+      uint32_t err_code;
+      err_code = app_timer_start(footstep_timer, APP_TIMER_TICKS(200), NULL);
+      APP_ERROR_CHECK(err_code);
     }
-    printf("cumulative val: %d\n", cumulative_val);
-    printf("no_of_footsteps: %d\n", no_of_footsteps);
-    nrf_delay_ms(500);
-    if(cumulative_val > max){
-      max = cumulative_val;
-    }
-    if(cumulative_val < min){
-      min = cumulative_val;
-    }
-    footstep_threshold = (max + min)/2;
-    nrf_delay_ms(500);
-    // x_velocity = x_velocity + x_val;
-    // x_position = x_position + x_velocity;
-    //
-    // // display results
-    // printf("x: %d\ty: %d\tz:%d\n", x_val, y_val, z_val);
-    //
-    // nrf_delay_ms(100);
-    //
-    // printf("x_velocity: %d\tx_position: %d\n", x_velocity, x_position);
-    // nrf_delay_ms(100);
 
+    if(avg_sum > max){
+      max = avg_sum;
+      footstep_threshold = (max + min)/2;
+    }
+
+    if(avg_sum < min){
+      min = avg_sum;
+      footstep_threshold = (max + min)/2;
+    }
+    cum_sum = 0;
+    avg_sum = 0;
+
+    print_counter++;
+    nrf_delay_ms(10);
+
+    if(print_counter == 10){
+      printf("no_of_footsteps: %d\n", no_of_footsteps);
+      printf("max: %d\n", max);
+      printf("min: %d\n", min);
+      printf("footstep footstep_threshold: %d\n", footstep_threshold);
+      nrf_delay_ms(10);
+      print_counter = 0;
+    }
   }
 }
