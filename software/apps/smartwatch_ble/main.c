@@ -83,11 +83,9 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
-// #include "smartwatch_ble_service.h"
 #include "mpu9250.h"
 
-#include "smartwatch_test_service.h"
-#include "smartwatch_test_service_2.h"
+#include "smartwatch_ble_service_manager.h"
 
 
 #define BUCKLER_SENSORS_SCL     NRF_GPIO_PIN_MAP(0,19)
@@ -151,12 +149,6 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 //{
 //    {CUSTOM_SERVICE_UUID, BLE_UUID_TYPE_VENDOR_BEGIN }
 //};
-
-/* Services */
-smartwatch_ble_service test_service;
-smartwatch_ble_service test_service_2;
-smartwatch_ble_service test_service_3;
-
 
 static void advertising_start(bool erase_bonds);
 
@@ -451,54 +443,6 @@ static void qwr_init(void) {
 
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
-}
-
-/**@brief Function for initializing services that will be used by the application.
- */
-static void services_init(void)
-{
-
-    ble_service_params test_service_params = {
-        .base_service_uuid = 0x1400,
-        .evt_handler = test_service_evt_handler,
-        .uuid = {{0xBC, 0x8A, 0xBF, 0x45, 0xCA, 0x05, 0x50, 0xBA, 0x40, 0x42, 0xB0, 0x00, 0xC9, 0xAD, 0x64, 0xF3}}
-    };
-    smartwatch_ble_service_init(&test_service_params, &test_service);
-    NRF_SDH_BLE_OBSERVER(test_service_obs,
-        BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_evt_handler,
-        &test_service
-    );
-
-    ble_service_params test_service_2_params = {
-        .base_service_uuid = 0x1500,
-        .evt_handler = test_service_2_evt_handler,
-        .uuid = {
-            {0x20, 0x73, 0x03, 0xc7, 0x3d, 0x90, 0xfa, 0x9c, 0x40, 0x45, 0xf6, 0xea, 0x8e, 0x2e, 0x85, 0xc4}
-            }
-    };
-    smartwatch_ble_service_init(&test_service_2_params, &test_service_2);
-    NRF_SDH_BLE_OBSERVER(test_service_2_obs,
-        BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_2_evt_handler,
-        &test_service_2
-    );
-
-    ble_service_params test_service_3_params = {
-        .base_service_uuid = 0x1600,
-        .evt_handler = test_service_2_evt_handler,
-        .uuid = {
-           {0x8a, 0xa8, 0x63, 0x16, 0x77, 0x19,0xdd,0xb8, 0xae, 0x44,0x50,0x71, 0x7d,0x77,0x6d,0x6a }
-       }
-    };
-
-
-    smartwatch_ble_service_init(&test_service_3_params, &test_service_3);
-    NRF_SDH_BLE_OBSERVER(test_service_3_obs,
-        BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_2_evt_handler,
-        &test_service_3
-    );
 }
 
 
