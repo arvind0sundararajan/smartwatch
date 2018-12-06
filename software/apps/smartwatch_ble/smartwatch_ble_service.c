@@ -58,7 +58,7 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 	NRF_LOG_INFO("%d", ble_uuid.uuid);
 
 	err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &service->service_handle);
-	
+
 	if (err_code != NRF_SUCCESS) {
 		NRF_LOG_INFO("err_code")
 		NRF_LOG_INFO("%d", err_code);
@@ -83,13 +83,13 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {
 	if (ble_service == NULL) {
 		return NRF_ERROR_NULL;
-	}	
+	}
 
 	/* As of this point, service has several things that have not been set
 	   1. char_handle
 	   2. Notification Timer which has not yet been set
 	   3. Timer id which should be set
-	   4. 
+	   4.
 	 */
 
 	uint32_t            err_code;
@@ -111,13 +111,13 @@ uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {
 
     char_md.char_props.read   = 1;
     char_md.char_props.write  = 1;
-    char_md.char_props.notify = 1; 
+    char_md.char_props.notify = 1;
     char_md.p_char_user_desc  = NULL;
     char_md.p_char_pf         = NULL;
     char_md.p_user_desc_md    = NULL;
-    char_md.p_cccd_md         = &cccd_md; 
+    char_md.p_cccd_md         = &cccd_md;
     char_md.p_sccd_md         = NULL;
-		
+
 	// I assume that the base_service_uuid is set such that the user
 	// has properly separated the uuids
     ble_uuid.type = ble_service->uuid;
@@ -201,7 +201,7 @@ uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_servi
 		hvx_params.p_data= gatts_value.p_value;
 
 		sd_ble_gatts_hvx(ble_service->conn_handle, &hvx_params); // TODO: ERR_CODE?
-		NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code); 
+		NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code);
 		NRF_LOG_INFO("%d", NRF_SUCCESS);
 
 	}

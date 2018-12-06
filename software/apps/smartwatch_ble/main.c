@@ -1,30 +1,30 @@
 /**
  * Copyright (c) 2014 - 2018, Nordic Semiconductor ASA
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form, except as embedded into a Nordic
  *    Semiconductor ASA integrated circuit in a product or a software update for
  *    such product, must reproduce the above copyright notice, this list of
  *    conditions and the following disclaimer in the documentation and/or other
  *    materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
- * 
+ *
  * 4. This software, with or without modification, must only be used with a
  *    Nordic Semiconductor ASA integrated circuit.
- * 
+ *
  * 5. Any software provided in binary form under this license must not be reverse
  *    engineered, decompiled, modified and/or disassembled.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -35,7 +35,7 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 /** @file
  *
@@ -113,7 +113,7 @@
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000)                  /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3                                       /**< Number of attempts before giving up the connection parameter negotiation. */
 
-#define NOTIFICATION_INTERVAL           APP_TIMER_TICKS(1000)     
+#define NOTIFICATION_INTERVAL           APP_TIMER_TICKS(1000)
 
 #define SEC_PARAM_BOND                  1                                       /**< Perform bonding. */
 #define SEC_PARAM_MITM                  0                                       /**< Man In The Middle protection not required. */
@@ -285,11 +285,11 @@ static void notification_timeout_handler(void * p_context)
 {
     UNUSED_PARAMETER(p_context);
     ret_code_t err_code;
-    
+
     // Increment the value of m_custom_value before nortifing it.
     m_custom_value++;
     NRF_LOG_INFO("timer handler %d", m_custom_value);
-    
+
     if (test_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
         err_code = smartwatch_ble_service_set_char_value(&test_service, m_custom_value);
         APP_ERROR_CHECK(err_code);
@@ -309,7 +309,7 @@ static void timers_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Create timers.
-    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT? 
+    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
     APP_ERROR_CHECK(err_code);
 
      // YOUR_JOB: Create any timers to be used by the application.
@@ -318,7 +318,7 @@ static void timers_init(void)
      //             one.
      //   ret_code_t err_code;
      //   err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-     //   APP_ERROR_CHECK(err_code); 
+     //   APP_ERROR_CHECK(err_code);
 }
 
 
@@ -415,11 +415,11 @@ static void on_yys_evt(ble_yy_service_t     * p_yy_service,
 //                        ble_cus_evt_t * p_evt)
 // {
 //     ret_code_t err_code;
-    
+
 //     switch(p_evt->evt_type)
 //     {
 //         case BLE_CUS_EVT_NOTIFICATION_ENABLED:
-            
+
 //              err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
 //              APP_ERROR_CHECK(err_code);
 //              break;
@@ -464,7 +464,7 @@ static void services_init(void)
         .uuid = {{0xBC, 0x8A, 0xBF, 0x45, 0xCA, 0x05, 0x50, 0xBA, 0x40, 0x42, 0xB0, 0x00, 0xC9, 0xAD, 0x64, 0xF3}}
     };
     smartwatch_ble_service_init(&test_service_params, &test_service);
-    NRF_SDH_BLE_OBSERVER(test_service_obs, 
+    NRF_SDH_BLE_OBSERVER(test_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         test_service_evt_handler,
         &test_service
@@ -478,7 +478,7 @@ static void services_init(void)
             }
     };
     smartwatch_ble_service_init(&test_service_2_params, &test_service_2);
-    NRF_SDH_BLE_OBSERVER(test_service_2_obs, 
+    NRF_SDH_BLE_OBSERVER(test_service_2_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         test_service_2_evt_handler,
         &test_service_2
@@ -492,9 +492,9 @@ static void services_init(void)
        }
     };
 
-    
+
     smartwatch_ble_service_init(&test_service_3_params, &test_service_3);
-    NRF_SDH_BLE_OBSERVER(test_service_3_obs, 
+    NRF_SDH_BLE_OBSERVER(test_service_3_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         test_service_2_evt_handler,
         &test_service_3
@@ -804,7 +804,7 @@ static void advertising_init(void)
 
     memset(&init, 0, sizeof(init));
 
-    uint8_t adv_manuf_data[10] = {0};    
+    uint8_t adv_manuf_data[10] = {0};
     uint8_array_t adv_manuf_data_array;
     adv_manuf_data[0] = 0x23;
     for (int i = 1; i < 10; i += 1) {

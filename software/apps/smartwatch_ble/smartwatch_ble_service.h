@@ -23,9 +23,9 @@ typedef struct ble_service_params {
 typedef struct smartwatch_ble_service {
     ble_event_handler evt_handler;	// In implementation, p_context is sent in with app_timer_start. In general, ignore
     uint16_t service_handle;    /**< Handle of Custom Service (as provided by the BLE stack). */
-    ble_gatts_char_handles_t    char_handle; /* Handle for the characteristic as provided by BLE stack */ 
+    ble_gatts_char_handles_t    char_handle; /* Handle for the characteristic as provided by BLE stack */
     uint8_t  uuid;              // Reference to UUID
-    uint16_t base_service_uuid; 
+    uint16_t base_service_uuid;
     uint8_t num_characteristics; // number of characteritics associated with the service
     uint16_t conn_handle;
     bool     notification_enabled;
@@ -38,7 +38,7 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service);
 uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint8_t new_value);
 
-/* COPY PASTA 
+/* COPY PASTA
    The event handler should have the following form
 
    void ble_event_handler(ble_evt_t const* p_ble_evt, void* p_context) {
