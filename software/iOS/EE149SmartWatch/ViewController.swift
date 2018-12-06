@@ -24,20 +24,11 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return array
     }()
     
-    let supportedServices : [CBUUID] = {
-        let servicesUUID = [
-            "BA49D63B-6FF0-4886-857B-43E0A95EB5EF"
-        ]
-        
-        var services = [CBUUID]()
-        for uuid in servicesUUID {
-            let service = CBUUID(string: uuid)
-            services.append(service)
-        }
-        return services
-    }()
+    enum ServiceName: String {
+        case TIMER = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
+    }
     
-    var services = [CBService]()
+    var services = [ServiceName:CBService]()
     
     var buckler : CBPeripheral! {
         didSet {
@@ -85,25 +76,6 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: 300)
-    }
-    
-    @objc
-    func startTimer(sender: UIButton) {
-        if sender.title(for: .normal) == "Start Timer" {
-            sender.setTitle("Starting", for: .normal)
-        } else {
-            sender.setTitle("Start Timer", for: .normal)
-        }
-        guard let title = sender.title(for: .normal) else {
-            return
-        }
-        printToDebug(str: "\(title)\n")
-        
-        if manager.isScanning {
-            manager.stopScan()
-        } else {
-            manager.scanForPeripherals(withServices: nil, options: nil)
-        }
     }
     
     func createRandomData(for cell: GraphCell) -> [CGPoint] {
@@ -192,9 +164,11 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         print("Discover Services")
         if let discoveredServices = peripheral.services {
             for service in discoveredServices {
-                print(service)
-                services.append(service)
-                peripheral.discoverCharacteristics(nil, for: service)
+                if service.uuid.uuidString == ServiceName.TIMER.rawValue {
+                    print(service)
+                    services[ServiceName.TIMER] = service
+                    peripheral.discoverCharacteristics(nil, for: service)
+                }
             }
         }
         
@@ -211,26 +185,26 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let readValue = characteristic.value {
-            print("Reading Values")
-            let valuesInt = [UInt8](readValue)
-            print(valuesInt)
-            if valuesInt[0] > 15 {
-                var dataToWrite = Data()
-                dataToWrite.append(0)
-                buckler.writeValue(dataToWrite, for: characteristic, type: .withResponse)
-            }
-        }
+//        if let readValue = characteristic.value {
+//            print("Reading Values")
+//            let valuesInt = [UInt8](readValue)
+//            print(valuesInt)
+//            if valuesInt[0] > 15 {
+//                var dataToWrite = Data()
+//                dataToWrite.append(0)
+//                buckler.writeValue(dataToWrite, for: characteristic, type: .withResponse)
+//            }
+//        }
     }
     
     /** Timer functions **/
     @objc
     func updateTimer() {
-        for service in services {
-            if let char = service.characteristics?[0] {
-                buckler.readValue(for: char)
-            }
-        }
+//        for service in services.values {
+//            if let char = service.characteristics?[0] {
+//                buckler.readValue(for: char)
+//            }
+//        }
     }
     
     

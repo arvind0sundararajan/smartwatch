@@ -9,13 +9,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "EE149SmartWatch/ViewController.swift"
-            timestampString = "565744327.4689161"
+            filePath = "EE149SmartWatch/CollectionViewCells.swift"
+            timestampString = "565820196.5590971"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
-            landmarkName = "startTimer(sender:)"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
+            landmarkName = "setupViews()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "EE149SmartWatch/CollectionViewCells.swift"
-            timestampString = "563684886.01056"
+            filePath = "EE149SmartWatch/ViewController.swift"
+            timestampString = "565820196.559423"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
-            landmarkName = "setupViews()"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

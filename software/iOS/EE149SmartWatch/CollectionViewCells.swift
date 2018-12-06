@@ -111,9 +111,9 @@ class GraphView : UIView {
 class TimerCell: UICollectionViewCell {
     
     private let cellId = CellId.GraphCell.rawValue
-    var collectionView : UICollectionViewController? {
+    var collectionView : ViewController? {
         didSet {
-            startTimerButton.addTarget(collectionView, action: #selector(ViewController.startTimer), for: .touchUpInside)
+            startTimerButton.addTarget(self, action: #selector(TimerCell.startTimerButtonEvtHandler), for: .touchUpInside)
         }
     }
     
@@ -153,6 +153,7 @@ class TimerCell: UICollectionViewCell {
         let picker = UIDatePicker()
         picker.datePickerMode = .time
         picker.translatesAutoresizingMaskIntoConstraints = false
+        picker.datePickerMode = .countDownTimer
         return picker
     }()
     
@@ -167,6 +168,32 @@ class TimerCell: UICollectionViewCell {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[v0][v1]-5-|", options: .alignAllCenterY, metrics: nil, views: ["v0": nameLabel, "v1": startTimerButton]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[v0]|", options: .alignAllCenterY, metrics: nil, views: ["v0": timePicker]))
 //
+    }
+
+    @objc
+    func startTimerButtonEvtHandler(sender: UIButton) {
+        if sender.title(for: .normal) == "Start Timer" {
+            sender.setTitle("Starting", for: .normal)
+        } else {
+            sender.setTitle("Start Timer", for: .normal)
+        }
+        
+        let timerAmount = timePicker.countDownDuration
+        if let timerService = collectionView?.services[ViewController.ServiceName.TIMER], let buckler = collectionView?.buckler,
+            let timerChar = timerService.characteristics?[0]
+        {
+            let seconds = timerAmount.magnitude
+            print("=====")
+            let numHours = Int(seconds/3600)
+            let numMinutes = UInt8((Int(seconds) - numHours*3600)/60);
+            assert(numHours < 24 && numMinutes < 60)
+            var data = Data(capacity: 2) // Let's have 2 bytes. One byte for the num of hours, One byte for the num of minutes
+            data.append(contentsOf: [numMinutes, UInt8(numHours)])
+            print(data)
+            print([UInt8](data))
+            buckler.writeValue(data, for: timerChar, type: .withResponse)
+            print("======")
+        }
     }
 }
 
