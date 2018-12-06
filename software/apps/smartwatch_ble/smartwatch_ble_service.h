@@ -36,7 +36,7 @@ typedef struct smartwatch_ble_service {
  */
 uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_ble_service* ble_service);
 uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service);
-uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint8_t new_value);
+uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint32_t new_value);
 
 /* COPY PASTA
    The event handler should have the following form

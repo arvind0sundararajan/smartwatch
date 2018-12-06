@@ -13,7 +13,7 @@
 #include "smartwatch_test_service.h"
 #include "smartwatch_test_service_2.h"
 
-smartwatch_ble_service test_service;
+smartwatch_ble_service timer_service;
 smartwatch_ble_service test_service_2;
 smartwatch_ble_service test_service_3;
 

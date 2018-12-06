@@ -136,7 +136,7 @@ APP_TIMER_DEF(m_notification_timer_id);
 // I2C manager
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
-static uint8_t m_custom_value = 0;
+static uint32_t m_custom_value = 4000000;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -282,11 +282,11 @@ static void notification_timeout_handler(void * p_context)
     m_custom_value++;
     NRF_LOG_INFO("timer handler %d", m_custom_value);
 
-    if (test_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
-        err_code = smartwatch_ble_service_set_char_value(&test_service, m_custom_value);
+    if (timer_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
+        err_code = smartwatch_ble_service_set_char_value(&timer_service, m_custom_value*2);
         APP_ERROR_CHECK(err_code);
-        err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
-        APP_ERROR_CHECK(err_code);
+        // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
+        // APP_ERROR_CHECK(err_code);
     }
 }
 

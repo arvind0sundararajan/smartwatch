@@ -11,12 +11,6 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 	if (ble_params == NULL) {
 		return NRF_ERROR_NULL;
 	}
-
-	NRF_LOG_INFO("%x", ble_params->base_service_uuid);
-
-	NRF_LOG_INFO("Start ble esrvice init.");
-
-	NRF_LOG_INFO("initialize stuff1.");
 	service->evt_handler = ble_params->evt_handler;
 	// NRF_LOG_INFO("initialize stuff2.");
 	service->service_handle = 0; // To be set later
@@ -28,8 +22,6 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 
 	uint32_t err_code;
 	ble_uuid_t ble_uuid;
-
-	NRF_LOG_INFO("initialize stuff before uuid_vs_add. 2");
 
 	ble_uuid128_t base_uuid = ble_params->uuid;
 	err_code = sd_ble_uuid_vs_add(&base_uuid, &service->uuid);
@@ -48,8 +40,6 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 		NRF_LOG_INFO("error code %d", err_code);
 		return NRF_ERROR_NULL;
 	}
-
-	NRF_LOG_INFO("stuff added.");
 
 	ble_uuid.type = service->uuid;
 	ble_uuid.uuid = service->base_service_uuid;
@@ -136,9 +126,9 @@ uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {
 
     attr_char_value.p_uuid    = &ble_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len  = sizeof(uint8_t);
+    attr_char_value.init_len  = sizeof(uint32_t);
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len   = sizeof(uint8_t);
+    attr_char_value.max_len   = sizeof(uint32_t);
 
     err_code = sd_ble_gatts_characteristic_add(ble_service->service_handle, &char_md,
                                                &attr_char_value,
@@ -151,7 +141,7 @@ uint32_t smartwatch_ble_service_add_char(smartwatch_ble_service* ble_service) {
     return NRF_SUCCESS;
 }
 
-uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint8_t new_value) {
+uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_service, uint32_t new_value) {
 	if (ble_service == NULL) {
 		return NRF_ERROR_NULL;
 	}
@@ -160,9 +150,9 @@ uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_servi
 	ble_gatts_value_t gatts_value;
 
 	memset(&gatts_value, 0, sizeof(gatts_value));
-	gatts_value.len    = sizeof(uint8_t);
+	gatts_value.len    = sizeof(uint32_t);
 	gatts_value.offset = 0;
-	gatts_value.p_value= &new_value;
+	gatts_value.p_value= (uint8_t*)&new_value;
 
 	err_code = sd_ble_gatts_value_set(ble_service->conn_handle, ble_service->char_handle.value_handle, &gatts_value);
 
@@ -173,7 +163,7 @@ uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_servi
 	// 	NRF_LOG_INFO("NRF_ERROR_INVALID_PARAM");
 	// }
 	// if (err_code == NRF_ERROR_NOT_FOUND) {
-	// 	NRF_LOG_INFO("NRF_ERROR_NOT_FOUND");
+	// 	NRF_LOG_INFO("NRF_ERROR_NOT_FOUND");2
 	// }
 	// if (err_code == NRF_ERROR_DATA_SIZE) {
 	// 	NRF_LOG_INFO("NRF_ERROR_DATA_SIZE");

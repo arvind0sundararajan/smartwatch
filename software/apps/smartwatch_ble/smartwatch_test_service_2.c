@@ -17,6 +17,10 @@ void test_service_2_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
 	ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
+	if (service != &test_service_2) {
+		return;
+	}
+
 	switch(p_ble_evt->header.evt_id) {
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
@@ -31,7 +35,6 @@ void test_service_2_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 		case BLE_GATTS_EVT_TIMEOUT:
 			break;
 		case BLE_GATTS_EVT_WRITE:
-			printf("2 Characteristic written to. Value: 0x%X (%d)\n", *p_evt_write->data, *p_evt_write->data);
 			if (p_evt_write->handle == service->char_handle.value_handle) {
 				printf("Characteristic written to. Value: 0x%X (%d)\n", *p_evt_write->data, *p_evt_write->data);
 

@@ -19,6 +19,10 @@ void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 
 	NRF_LOG_INFO("%d", p_ble_evt->header.evt_id);
 
+	if (service != &timer_service) {
+		return;
+	}
+
 	switch(p_ble_evt->header.evt_id) {
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
@@ -33,7 +37,9 @@ void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 			break;
 		case BLE_GATTS_EVT_WRITE:
 			if (p_evt_write->handle == service->char_handle.value_handle) {
-				NRF_LOG_INFO("\tCharacteristic written to. Value: 0x%X (%d)\n", *p_evt_write->data, *p_evt_write->data);
+				uint8_t seconds = *p_evt_write->data;
+				uint8_t hours = *(p_evt_write->data + 1);
+				NRF_LOG_INFO("\t %dh%ds", hours, seconds);
 			}
 			break;
 	}
