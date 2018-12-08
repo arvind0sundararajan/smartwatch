@@ -12,6 +12,7 @@
 
 #include "buckler.h"
 #include "si7021.h"
+#include "ms5637.h"
 
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
@@ -48,13 +49,22 @@ printf("Log initialized\n");
   nrf_delay_ms(20);
   si7021_init(&twi_mngr_instance);
   si7021_config(si7021_mode0);
+  ms5637_init(&twi_mngr_instance, osr_8192);
+  ms5637_start();
 
-  float humidity, temperature = 0;
+float pressure, si_temperature;
+
+float humidity, ms_temperature = 0;
 
   while (1) {
     nrf_delay_ms(5000);
-    si7021_read_temp_and_RH(&temperature, &humidity);
-    printf("humidity: %f, temperature: %f\n", humidity, temperature);
+    si7021_read_temp_and_RH(&si_temperature, &humidity);
+    printf("Relative humidity: %f, si temperature in celsius: %f\n", humidity, si_temperature);
+    nrf_delay_ms(1000);
+    ms5637_get_temperature_and_pressure(&ms_temperature, &pressure);
+    //temperature = ms5637_get_temperature();
+    printf("Pressure in mbar: %f, ms temperature in celsius: %f \n, ",pressure, ms_temperature);
+
     //__WFE();
   }
 }
