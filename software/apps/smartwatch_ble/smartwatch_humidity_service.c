@@ -16,9 +16,7 @@ void humidity_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
     smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-
-    NRF_LOG_INFO("%d", p_ble_evt->header.evt_id);
-
+    
     if (service != &humidity_service) {
         return;
     }
@@ -27,7 +25,7 @@ void humidity_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
         case BLE_GAP_EVT_DISCONNECTED:
             break;
         case BLE_GAP_EVT_CONNECTED:
-            printf("humidity service connected");
+            NRF_LOG_INFO("humidity service connected");
             break;
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
             break;

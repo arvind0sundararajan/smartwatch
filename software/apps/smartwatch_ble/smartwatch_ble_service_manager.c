@@ -1,5 +1,5 @@
 #include "smartwatch_ble_service_manager.h"
-
+#include "nrf_log.h"
 /**@brief Function for initializing services that will be used by the application.
  */
 void services_init(void)
@@ -103,7 +103,6 @@ void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             }
-            printf("connected test service 2\n");
             break;
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
             break;

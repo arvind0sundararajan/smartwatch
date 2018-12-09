@@ -17,17 +17,11 @@ void pressure_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-    NRF_LOG_INFO("%d", p_ble_evt->header.evt_id);
-
-    if (service != &pressure_service) {
-        return;
-    }
-
     switch(p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_DISCONNECTED:
             break;
         case BLE_GAP_EVT_CONNECTED:
-            printf("pressure service conneced");
+            NRF_LOG_INFO("pressure service conneced");
             break;
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
             break;
