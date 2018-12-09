@@ -11,9 +11,6 @@ import CoreBluetooth
 
 class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CBCentralManagerDelegate, CBPeripheralDelegate {
     private let cellId = "cellId"
-    
-    private let names = ["Steps", "Temperature", "Sensor3", "Sensor4"]
-    
     private var manager : CBCentralManager!
     
     private lazy var dataForGraphCells : [[CGPoint]?] = {
@@ -24,11 +21,29 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return array
     }()
     
-    enum ServiceName: String {
+    enum ServiceID: String {
         case TIMER = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
+        case STEPS = "C4851500-EAF6-4540-9CFA-903DC7037320"
+        case TEMP = "1"
+        case PRESSURE = "2"
+        case HUMIDITY = "3"
     }
+
     
-    var services = [ServiceName:CBService]()
+    private let serviceIds = [
+        ServiceID.STEPS,
+        ServiceID.TEMP,
+        ServiceID.PRESSURE,
+        ServiceID.HUMIDITY,
+        ServiceID.TIMER
+    ]
+    private let names = [ServiceID.STEPS: "Footsteps",
+                         ServiceID.TEMP: "Temperature",
+                         ServiceID.PRESSURE: "Pressure",
+                         ServiceID.HUMIDITY: "Humidity",
+                         ServiceID.TIMER: "Timer"]
+    
+    var services = [ServiceID:CBService]()
     
     var buckler : CBPeripheral! {
         didSet {
@@ -47,18 +62,24 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         collectionView?.register(GraphCell.self, forCellWithReuseIdentifier: CellId.GraphCell.rawValue)
         collectionView?.register(TimerCell.self, forCellWithReuseIdentifier: CellId.TimerCell.rawValue)
         collectionView?.register(DebuggingCell.self, forCellWithReuseIdentifier: CellId.DebugCell.rawValue)
+        collectionView?.register(BasicCell.self, forCellWithReuseIdentifier: CellId.BasicCell.rawValue)
         
         manager = CBCentralManager.init(delegate: self, queue: nil)
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.item == 1 {
+        let serviceId = serviceIds[indexPath.item]
+        if serviceId == ServiceID.TIMER {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.TimerCell.rawValue, for: indexPath) as! TimerCell
             cell.collectionView = self
             return cell
         }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.DebugCell.rawValue, for: indexPath) as! DebuggingCell
         
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.BasicCell.rawValue, for: indexPath) as! BasicCell
+        cell.parameter = names[serviceId] ?? "Fuck"
+        cell.viewController = self
+        cell.serviceId = serviceId
+        return cell
 //        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.GraphCell.rawValue, for: indexPath) as! GraphCell
 //        if let data = dataForGraphCells[indexPath.item] {
 //            cell.pointsToDraw = data
@@ -67,11 +88,11 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
 //            cell.pointsToDraw = dataForGraphCells[indexPath.item]!
 //        }
 //        cell.name = names[indexPath.item]
-        return cell
+//        return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 2
+        return names.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -124,6 +145,18 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         }
     }
     
+    func printValue(str: String, forCell serviceId: ServiceID) {
+        let cells = self.collectionView.visibleCells
+        for cell in cells {
+            if let basicCell = cell as? BasicCell {
+                if basicCell.serviceId == serviceId {
+                    basicCell.valueTextView.text = str
+                    return
+                }
+            }
+        }
+    }
+    
     /********* CBManagerDelegate **************/
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -138,12 +171,11 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         if let manuData = advertisementData[CBAdvertisementDataManufacturerDataKey],
             let data = manuData as? Data {
             let dataBytes = [UInt8](data)
-            print(dataBytes)
-            if dataBytes[0] == 0xe0 && dataBytes[1] == 0x02 && // LAB11 COMPANY IDENTIFIER
+            if dataBytes[1] == 0xe7 && dataBytes[0] == 0x13 && // LAB11 COMPANY IDENTIFIER
                 dataBytes[2] == 0x23
             {
                 // Buckler found
-                print(dataBytes[3..<dataBytes.count])
+                print("buckler found")
                 buckler = peripheral
             }
         }
@@ -164,9 +196,9 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         print("Discover Services")
         if let discoveredServices = peripheral.services {
             for service in discoveredServices {
-                if service.uuid.uuidString == ServiceName.TIMER.rawValue {
-                    print(service)
-                    services[ServiceName.TIMER] = service
+                let serviceIdEnum = ServiceID(rawValue: service.uuid.uuidString)
+                if let serviceId = serviceIdEnum {
+                    services[serviceId] = service
                     peripheral.discoverCharacteristics(nil, for: service)
                 }
             }
@@ -178,23 +210,19 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         print("Discovered Characteristics")
         if let discoveredCharacteristics = service.characteristics {
-            for char in discoveredCharacteristics {
-                print(char)
-            }
+            peripheral.setNotifyValue(true, for: discoveredCharacteristics[0])
         }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-//        if let readValue = characteristic.value {
-//            print("Reading Values")
-//            let valuesInt = [UInt8](readValue)
-//            print(valuesInt)
-//            if valuesInt[0] > 15 {
-//                var dataToWrite = Data()
-//                dataToWrite.append(0)
-//                buckler.writeValue(dataToWrite, for: characteristic, type: .withResponse)
-//            }
-//        }
+        if var readData = characteristic.value {
+            let value = UInt32(littleEndian: readData.withUnsafeBytes( { $0.pointee }))
+            if let serviceId = ServiceID(rawValue: characteristic.service.uuid.uuidString) {
+                printValue(str: "\(value)\n", forCell: serviceId)
+            } else {
+                print("didUpdateValueFor Not working")
+            }
+        }
     }
     
     /** Timer functions **/
