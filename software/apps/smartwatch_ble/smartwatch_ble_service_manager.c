@@ -4,18 +4,20 @@
  */
 void services_init(void)
 {
+    /* Timer */
     ble_service_params timer_service_params = {
         .base_service_uuid = 0x1400,
-        .evt_handler = test_service_evt_handler,
+        .evt_handler = timer_service_evt_handler,
         .uuid = {{0xBC, 0x8A, 0xBF, 0x45, 0xCA, 0x05, 0x50, 0xBA, 0x40, 0x42, 0xB0, 0x00, 0xC9, 0xAD, 0x64, 0xF3}}
     };
     smartwatch_ble_service_init(&timer_service_params, &timer_service);
-    NRF_SDH_BLE_OBSERVER(test_service_obs,
+    NRF_SDH_BLE_OBSERVER(timer_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_evt_handler,
+        timer_service_evt_handler,
         &timer_service
     );
 
+    /* Footstep */
     ble_service_params footstep_service_params = {
         .base_service_uuid = 0x1500,
         .evt_handler = footstep_service_evt_handler,
@@ -30,27 +32,58 @@ void services_init(void)
         &footstep_service
     );
 
-    ble_service_params test_service_3_params = {
+    /* Pressure */
+    ble_service_params pressure_params = {
         .base_service_uuid = 0x1600,
-        .evt_handler = test_service_2_evt_handler,
+        .evt_handler = pressure_evt_handler,
         .uuid = {
-           {0x8a, 0xa8, 0x63, 0x16, 0x77, 0x19,0xdd,0xb8, 0xae, 0x44,0x50,0x71, 0x7d,0x77,0x6d,0x6a }
+           { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
        }
     };
-    smartwatch_ble_service_init(&test_service_3_params, &test_service_3);
-    NRF_SDH_BLE_OBSERVER(test_service_3_obs,
+    smartwatch_ble_service_init(&pressure_service_params, &pressure_service);
+    NRF_SDH_BLE_OBSERVER(pressure_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_2_evt_handler,
-        &test_service_3
+        pressure_evt_handler,
+        &pressure_service
+    );
+
+    /* Temp */
+    ble_service_params temp_service_params = {
+        .base_service_uuid = 0x1600,
+        .evt_handler = temp_service_evt_handler,
+        .uuid = {
+           { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
+       }
+    };
+    smartwatch_ble_service_init(&temp_service_params, &temp_service);
+    NRF_SDH_BLE_OBSERVER(temp_service_obs,
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        temp_service_evt_handler,
+        &temp_service
+    );
+
+    /* Humidity */
+    ble_service_params humidity_service_params = {
+        .base_service_uuid = 0x1600,
+        .evt_handler = humidity_service_evt_handler,
+        .uuid = {
+           { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
+       }
+    };
+    smartwatch_ble_service_init(&humidity_service_params, &humidity_service);
+    NRF_SDH_BLE_OBSERVER(humidity_service_obs,
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        humidity_service_evt_handler,
+        &humidity_service
     );
 
     custom_services[0] = &timer_service;
     custom_services[1] = &footstep_service;
-    // custom_services[2] = &test_service_3;
+    custom_services[2] = &pressure_service;
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
-        manager_evt_handler, 
+        manager_evt_handler,
         NULL
     );
 }

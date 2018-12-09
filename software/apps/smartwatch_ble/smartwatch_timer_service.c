@@ -11,7 +11,7 @@
 // #include "boards.h"
 #include "nrf_log.h"
 
-void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
+void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
 
 	smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
@@ -27,7 +27,7 @@ void test_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
 		case BLE_GAP_EVT_CONNECTED:
-			service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+			printf("timer connected");
 			break;
 		case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 			break;

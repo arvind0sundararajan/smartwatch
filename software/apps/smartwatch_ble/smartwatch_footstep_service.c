@@ -25,8 +25,7 @@ void footstep_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
 		case BLE_GAP_EVT_CONNECTED:
-			service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-			printf("connected test service 2\n");
+			printf("footstep service  connected");
 			break;
 		case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 			break;

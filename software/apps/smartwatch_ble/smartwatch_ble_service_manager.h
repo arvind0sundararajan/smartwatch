@@ -21,7 +21,7 @@
 
 smartwatch_ble_service test_service_3;
 
-smartwatch_ble_service* custom_services[3];
+smartwatch_ble_service* custom_services[5];
 
 void services_init(void);
 void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context);
