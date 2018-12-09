@@ -93,13 +93,13 @@ void services_init(void)
 void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     switch(p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_DISCONNECTED:
-            for (int i = 0; i < 3; i ++) {
+            for (int i = 0; i < 5; i ++) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = BLE_CONN_HANDLE_INVALID;
             }
             break;
         case BLE_GAP_EVT_CONNECTED:
-            for (int i = 0; i < 3; i ++) {
+            for (int i = 0; i < 5; i ++) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             }

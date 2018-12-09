@@ -187,7 +187,7 @@ uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_servi
 		hvx_params.p_data= gatts_value.p_value;
 
 		sd_ble_gatts_hvx(ble_service->conn_handle, &hvx_params); // TODO: ERR_CODE?
-		NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code);
+		// NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code);
 
 	}
 

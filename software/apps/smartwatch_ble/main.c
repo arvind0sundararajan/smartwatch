@@ -134,9 +134,9 @@ BLE_ADVERTISING_DEF(m_advertising);                                             
 APP_TIMER_DEF(m_notification_timer_id);
 
 // I2C manager
-NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
+// NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
-static uint32_t m_custom_value = 4000000;
+static uint32_t m_custom_value = 0;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -280,11 +280,17 @@ static void notification_timeout_handler(void * p_context)
 
     // Increment the value of m_custom_value before nortifing it.
     m_custom_value++;
-    NRF_LOG_INFO("timer handler %d", m_custom_value);
+    // NRF_LOG_INFO("timer handler %d", m_custom_value);
 
     if (timer_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
-        err_code = smartwatch_ble_service_set_char_value(&footstep_service, m_custom_value);
-        APP_ERROR_CHECK(err_code);
+        for (int i = 0; i < 5; i ++) {
+            if (m_custom_value % (i+2) == 0) {
+                err_code = smartwatch_ble_service_set_char_value(custom_services[i], (i+1)*m_custom_value);
+                APP_ERROR_CHECK(err_code);
+            }
+            
+        }
+
         // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
         // APP_ERROR_CHECK(err_code);
     }
@@ -888,16 +894,16 @@ int main(void)
     printf("Started!\n");
 
     // initialize i2c master (two wire interface)
-    nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
-    i2c_config.scl = BUCKLER_SENSORS_SCL;
-    i2c_config.sda = BUCKLER_SENSORS_SDA;
-    i2c_config.frequency = NRF_TWIM_FREQ_100K;
-    ret_code_t error_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
-    APP_ERROR_CHECK(error_code);
+    // nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
+    // i2c_config.scl = BUCKLER_SENSORS_SCL;
+    // i2c_config.sda = BUCKLER_SENSORS_SDA;
+    // i2c_config.frequency = NRF_TWIM_FREQ_100K;
+    // ret_code_t error_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
+    // APP_ERROR_CHECK(error_code);
 
     // initialize MPU-9250 driver
-    mpu9250_init(&twi_mngr_instance);
-    printf("MPU-9250 initialized\n");
+    // mpu9250_init(&twi_mngr_instance);
+    // printf("MPU-9250 initialized\n");
 
 
     // Enter main loop.
