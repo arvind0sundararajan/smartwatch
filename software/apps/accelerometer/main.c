@@ -19,7 +19,6 @@
 #include "nrf_serial.h"
 #include "nrfx_gpiote.h"
 #include "nrfx_saadc.h"
-#include "nrf_calendar.h"
 #include "app_timer.h"
 #include "nrf_drv_clock.h"
 
@@ -103,12 +102,16 @@ int main (void) {
 
   uint32_t max = 0;
   uint32_t min = UINT32_MAX;
-  uint32_t footstep_threshold = UINT32_MAX;
+  uint32_t footstep_threshold = 0;
   uint32_t average_value = 0;
   int no_of_footsteps = 0;
   int print_counter = 0;
+  int max_min_update_counter = 0;
   uint32_t cum_sum = 0;
   uint32_t avg_sum = 0;
+  uint32_t sample_old = 0;
+  uint32_t sample_new = 0;
+  uint32_t precision = 100;
 
   /* CALIBRATION */
   // for(int i = 0; i < 200; i++){
@@ -132,6 +135,7 @@ int main (void) {
   // }
 
   while (1) {
+    //Low pass filter, averaging the inputs
     for(int i = 0; i < 4; i++){
       // sample analog inputs
       nrf_saadc_value_t x_val = sample_value(X_CHANNEL);
@@ -141,36 +145,50 @@ int main (void) {
       cum_sum += cumulative_val;
     }
     avg_sum = cum_sum/4;
-    if(avg_sum > (3/2) * footstep_threshold && !was_footstep){
-      no_of_footsteps++;
+    //if the measurement is more than precision level different, update the new value
+    if(avg_sum - sample_old > precision || sample_old - avg_sum < precision){
+      //printf("ENTERED PRECISION CHANGE!!!! \n");
+      sample_old = sample_new;
+      sample_new = avg_sum; //update the sample new to the new value
+    }
+    /* If the newly registered sample is greater than the footstep threshold and less then old sample,
+    i.e, negative slope in acceleration graph */
+    if(sample_new > footstep_threshold && sample_new < sample_old && !was_footstep){
+      no_of_footsteps++; //increment number of footsteps
       was_footstep = true;
       uint32_t err_code;
       err_code = app_timer_start(footstep_timer, APP_TIMER_TICKS(200), NULL);
       APP_ERROR_CHECK(err_code);
     }
 
-    if(avg_sum > max){
-      max = avg_sum;
-      footstep_threshold = (max + min)/2;
-    }
-
-    if(avg_sum < min){
-      min = avg_sum;
-      footstep_threshold = (max + min)/2;
-    }
     cum_sum = 0;
     avg_sum = 0;
-
+    sample_old = sample_new; //pass the new samples value to the old register
     print_counter++;
+    max_min_update_counter++;
     nrf_delay_ms(10);
 
     if(print_counter == 10){
       printf("no_of_footsteps: %d\n", no_of_footsteps);
       printf("max: %d\n", max);
       printf("min: %d\n", min);
+      printf("sample new: %d\n", sample_new);
+      printf("sample old: %d\n", sample_old);
       printf("footstep footstep_threshold: %d\n", footstep_threshold);
       nrf_delay_ms(10);
       print_counter = 0;
+    }
+    if(max_min_update_counter > 50){
+      if(sample_new > max){
+        max = sample_new;
+        footstep_threshold = (max + min)/2;
+      }
+
+      if(sample_new < min){
+        min = sample_new;
+        footstep_threshold = (max + min)/2;
+      }
+      max_min_update_counter = 0;
     }
   }
 }
