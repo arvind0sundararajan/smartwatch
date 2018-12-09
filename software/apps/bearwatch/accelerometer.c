@@ -54,11 +54,6 @@ static void footstep_handler(){
 int accelerometer_main (void) {
   ret_code_t error_code = NRF_SUCCESS;
 
-  // initialize RTT library
-  error_code = NRF_LOG_INIT(NULL);
-  APP_ERROR_CHECK(error_code);
-  NRF_LOG_DEFAULT_BACKENDS_INIT();
-
   // initialize analog to digital converter
   nrfx_saadc_config_t saadc_config = NRFX_SAADC_DEFAULT_CONFIG;
   saadc_config.resolution = NRF_SAADC_RESOLUTION_12BIT;

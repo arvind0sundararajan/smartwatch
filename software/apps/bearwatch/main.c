@@ -86,6 +86,19 @@ static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
 TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS timer. */
 
+/* INIT FUNCTIONS */
+
+/**@brief Function for initializing the nrf log module.
+ */
+static void log_init(void)
+{
+    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+    printf("Log started\n");
+}
+
 
 static void initialize_leds(void) {
     // initialize GPIO driver
@@ -132,6 +145,9 @@ static void led_toggle_timer_callback (void * pvParameter)
 int main(void)
 {
     ret_code_t err_code = NRF_SUCCESS;
+
+    /* initialize nrf log module */
+    log_init();
 
     /* Initialize clock driver for better time accuracy in FREERTOS */
     err_code = nrf_drv_clock_init();

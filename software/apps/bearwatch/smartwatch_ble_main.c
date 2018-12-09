@@ -298,13 +298,7 @@ static void timers_init(void)
     err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
     APP_ERROR_CHECK(err_code);
 
-     // YOUR_JOB: Create any timers to be used by the application.
-     //             Below is an example of how to create a timer.
-     //             For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
-     //             one.
-     //   ret_code_t err_code;
-     //   err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-     //   APP_ERROR_CHECK(err_code);
+     /* TODO: change to FreeRTOS timers*/
 }
 
 
@@ -505,8 +499,9 @@ static void application_timers_start(void)
     /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
        ret_code_t err_code;
        err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-       APP_ERROR_CHECK(err_code); */
+       APP_ERROR_CHECK(err_code); 
 
+       TODO: change to FreeRTOS*/
 }
 
 
@@ -799,17 +794,6 @@ static void buttons_leds_init(bool * p_erase_bonds)
 }
 
 
-/**@brief Function for initializing the nrf log module.
- */
-static void log_init(void)
-{
-    ret_code_t err_code = NRF_LOG_INIT(NULL);
-    APP_ERROR_CHECK(err_code);
-
-    NRF_LOG_DEFAULT_BACKENDS_INIT();
-}
-
-
 /**@brief Function for initializing power management.
  */
 static void power_management_init(void)
@@ -851,15 +835,9 @@ static void advertising_start(bool erase_bonds)
 }
 
 
-/**@brief Function for application main entry.
- */
-int smartwatch_ble_main(void)
-{
-    bool erase_bonds;
-
-    // Initialize.
-    log_init();
-    printf("Log started!\n");
+/* initialize everything BLE . */
+static void smartwatch_ble_init(void) {
+	bool erase_bonds;
 
     timers_init();
     buttons_leds_init(&erase_bonds);
@@ -880,6 +858,14 @@ int smartwatch_ble_main(void)
     advertising_start(erase_bonds);
 
     printf("Started!\n");
+}
+
+
+/**@brief Function for application main entry.
+ */
+int smartwatch_ble_main(void)
+{
+	smartwatch_ble_init();
 
     // Enter main loop.
     for (;;)
