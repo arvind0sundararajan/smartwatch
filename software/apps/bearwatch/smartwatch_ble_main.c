@@ -280,8 +280,12 @@ static void notification_timeout_handler(void * p_context)
     // Increment the value of m_custom_value before nortifing it.
     m_custom_value++;
     NRF_LOG_INFO("timer handler %d", m_custom_value);
-        err_code = smartwatch_ble_service_set_char_value(&footstep_service, m_custom_value);
-        APP_ERROR_CHECK(err_code);
+    for (int i= 0; i < 5; i += 1) {
+        if (m_custom_value % (i+1) == 0) {
+            err_code = smartwatch_ble_service_set_char_value(custom_services[i], m_custom_value);
+            APP_ERROR_CHECK(err_code);
+        }
+    }
         // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
         // APP_ERROR_CHECK(err_code);
 }
@@ -864,18 +868,12 @@ static void smartwatch_ble_init(void) {
 
 /**@brief Function for application main entry.
  */
-int smartwatch_ble_main(void)
+void smartwatch_ble_main(void)
 {
 	smartwatch_ble_init();
 
 	/* display test */
 	display_write("BLE initialized", DISPLAY_LINE_0);
-
-    // Enter main loop.
-    for (;;)
-    {
-        idle_state_handle();
-    }
 }
 
 
