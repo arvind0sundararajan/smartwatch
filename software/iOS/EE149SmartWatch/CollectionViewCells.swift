@@ -12,6 +12,7 @@ enum CellId : String {
     case GraphCell = "graphCellId"
     case TimerCell = "timerCellId"
     case DebugCell = "debugCellId"
+    case BasicCell = "basicCellId"
 }
 
 class GraphCell: UICollectionViewCell {
@@ -179,7 +180,7 @@ class TimerCell: UICollectionViewCell {
         }
         
         let timerAmount = timePicker.countDownDuration
-        if let timerService = collectionView?.services[ViewController.ServiceName.TIMER], let buckler = collectionView?.buckler,
+        if let timerService = collectionView?.services[ViewController.ServiceID.TIMER], let buckler = collectionView?.buckler,
             let timerChar = timerService.characteristics?[0]
         {
             let seconds = timerAmount.magnitude
@@ -227,3 +228,95 @@ class DebuggingCell :  UICollectionViewCell {
     }
 }
 
+class BasicCell : UICollectionViewCell {
+    private let cellId = CellId.BasicCell.rawValue
+    
+    var serviceId : ViewController.ServiceID?
+    var viewController: ViewController?
+    
+    var notificationOn  = false
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    let textView : UITextView = {
+        let view = UITextView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isEditable = false
+        return view
+    }()
+    
+    var parameter : String = "" {
+        didSet {
+            self.textView.text = parameter
+        }
+    }
+    
+    let subscribeButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("Subscribe?", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.red, for: .selected)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    @objc
+    func subscribeButtonEvtHandler() {
+        if let vc = self.viewController {
+            if let buckler = vc.buckler,
+                let serviceId = self.serviceId,
+                let service = vc.services[serviceId],
+                let characteristic = service.characteristics?[0]
+            {
+                if notificationOn {
+                    buckler.setNotifyValue(false, for: characteristic)
+                } else {
+                    buckler.setNotifyValue(true, for: characteristic)
+                }
+                notificationOn = !notificationOn
+            }
+        }
+    }
+    
+    let valueTextView : UITextView = {
+        let view = UITextView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isEditable = false
+        view.isSelectable = false
+        view.font = UIFont.monospacedDigitSystemFont(ofSize: CGFloat(30), weight: .bold)
+        view.text = "0000000000"
+        return view
+    }()
+    
+    func setupViews() {
+        backgroundColor = UIColor.clear
+        
+        addSubview(textView)
+
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[v0]-0-|", options: .alignAllTop, metrics: nil, views: ["v0": textView, "v1": subscribeButton]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[v0]-0-|", options: .alignAllBottom, metrics: nil, views: ["v0": textView]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllLeft, metrics: nil, views: ["v0": textView]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllRight, metrics: nil, views: ["v0": textView]))
+
+        addSubview(subscribeButton)
+        subscribeButton.sizeToFit()
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[v0]-10-|", options: .alignAllRight, metrics: nil, views: ["v0": subscribeButton]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[v0]-10-|", options: .alignAllBottom, metrics: nil, views: ["v0": subscribeButton]))
+        
+        addSubview(valueTextView)
+        valueTextView.sizeToFit()
+        NSLayoutConstraint(item: valueTextView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: valueTextView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: valueTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: valueTextView.contentSize.height+10).isActive = true
+        NSLayoutConstraint(item: valueTextView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: valueTextView.contentSize.width+10).isActive = true
+        
+        subscribeButton.addTarget(self, action: #selector(BasicCell.subscribeButtonEvtHandler) , for: .touchUpInside)
+    }
+}
