@@ -77,7 +77,7 @@
 static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
 
 #define TASK_DELAY        500           /**< Task delay. Delays a LED0 task for 200 ms */
-#define TIMER_PERIOD      5000          /**< Timer period. timer will expire after 1000 ms */
+#define TIMER_PERIOD      1000          /**< Timer period. timer will expire after 1000 ms */
 
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
 TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS timer. */

@@ -54,7 +54,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
   $(SDK_ROOT)/components/libraries/sensorsim/sensorsim.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
-  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
+  $(SDK_ROOT)/components/libraries/timer/app_timer_freertos.c \
   $(SDK_ROOT)/components/libraries/twi_mngr/nrf_twi_mngr.c \
   $(SDK_ROOT)/components/libraries/uart/app_uart.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -74,7 +74,7 @@ SRC_FILES += \
   $(wildcard $(SDK_ROOT)/external/freertos/portable/GCC/nrf52/*.c) \
   $(wildcard $(SDK_ROOT)/external/freertos/source/*.c) \
   $(SDK_ROOT)/external/freertos/source/portable/Common/mpu_wrappers.c \
-  $(wildcard $(SDK_ROOT)/external/freertos/source/portable/MemMang/*.c) \
+  $(SDK_ROOT)/external/freertos/source/portable/MemMang/heap_1.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
