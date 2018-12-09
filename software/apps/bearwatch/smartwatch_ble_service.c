@@ -1,6 +1,5 @@
 #include "smartwatch_ble_service.h"
 #include "sdk_common.h"
-#include "ble_cus.h"
 #include <string.h>
 #include "ble_srv_common.h"
 #include "nrf_gpio.h"

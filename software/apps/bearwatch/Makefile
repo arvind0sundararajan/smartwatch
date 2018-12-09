@@ -7,7 +7,6 @@ SDK_ROOT := ../../buckler/software/nrf5x-base/sdk/nrf5_sdk_15.0.0/
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
   LINKER_SCRIPT  := ble_app_template_gcc_nrf52.ld
 
-# TODO: add freertos dependencies
 # Source files common to all targets
 SRC_FILES += \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
@@ -71,6 +70,11 @@ SRC_FILES += \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
+  $(wildcard $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf52/*.c) \
+  $(wildcard $(SDK_ROOT)/external/freertos/portable/GCC/nrf52/*.c) \
+  $(wildcard $(SDK_ROOT)/external/freertos/source/*.c) \
+  $(SDK_ROOT)/external/freertos/source/portable/Common/mpu_wrappers.c \
+  $(wildcard $(SDK_ROOT)/external/freertos/source/portable/MemMang/*.c) \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
@@ -161,6 +165,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/scheduler \
   $(SDK_ROOT)/components/libraries/sdcard \
   $(SDK_ROOT)/components/libraries/sensorsim \
+  $(SDK_ROOT)/components/libraries/serial \
   $(SDK_ROOT)/components/libraries/slip \
   $(SDK_ROOT)/components/libraries/sortlist \
   $(SDK_ROOT)/components/libraries/spi_mngr \
@@ -214,6 +219,10 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/external/segger_rtt \
+  $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf52 \
+  $(SDK_ROOT)/external/freertos/portable/GCC/nrf52 \
+  $(SDK_ROOT)/external/freertos/source \
+  $(SDK_ROOT)/external/freertos/source/include \
   $(SDK_ROOT)/integration/nrfx \
   $(SDK_ROOT)/integration/nrfx/legacy \
   $(SDK_ROOT)/modules/nrfx \
@@ -250,7 +259,7 @@ CFLAGS += -DDEBUG_NRF
 CFLAGS += -D_PARAMS\(paramlist\)=paramlist
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS += -Wall -Werror
+CFLAGS += -Wall #-Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing

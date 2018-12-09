@@ -51,7 +51,7 @@ static void footstep_handler(){
   was_footstep = false;
 }
 
-int main (void) {
+int accelerometer_main (void) {
   ret_code_t error_code = NRF_SUCCESS;
 
   // initialize RTT library
@@ -103,7 +103,6 @@ int main (void) {
   uint32_t max = 0;
   uint32_t min = UINT32_MAX;
   uint32_t footstep_threshold = 0;
-  uint32_t average_value = 0;
   int no_of_footsteps = 0;
   int print_counter = 0;
   int max_min_update_counter = 0;
@@ -170,11 +169,11 @@ int main (void) {
 
     if(print_counter == 10){
       printf("no_of_footsteps: %d\n", no_of_footsteps);
-      printf("max: %d\n", max);
-      printf("min: %d\n", min);
-      printf("sample new: %d\n", sample_new);
-      printf("sample old: %d\n", sample_old);
-      printf("footstep footstep_threshold: %d\n", footstep_threshold);
+      printf("max: %ld\n", max);
+      printf("min: %ld\n", min);
+      printf("sample new: %ld\n", sample_new);
+      printf("sample old: %ld\n", sample_old);
+      printf("footstep footstep_threshold: %ld\n", footstep_threshold);
       nrf_delay_ms(10);
       print_counter = 0;
     }

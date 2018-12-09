@@ -133,9 +133,6 @@ BLE_ADVERTISING_DEF(m_advertising);                                             
 
 APP_TIMER_DEF(m_notification_timer_id);
 
-// I2C manager
-NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
-
 static uint32_t m_custom_value = 4000000;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
@@ -859,7 +856,7 @@ static void advertising_start(bool erase_bonds)
 
 /**@brief Function for application main entry.
  */
-int main(void)
+int smartwatch_ble_main(void)
 {
     bool erase_bonds;
 
@@ -886,19 +883,6 @@ int main(void)
     advertising_start(erase_bonds);
 
     printf("Started!\n");
-
-    // initialize i2c master (two wire interface)
-    nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
-    i2c_config.scl = BUCKLER_SENSORS_SCL;
-    i2c_config.sda = BUCKLER_SENSORS_SDA;
-    i2c_config.frequency = NRF_TWIM_FREQ_100K;
-    ret_code_t error_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
-    APP_ERROR_CHECK(error_code);
-
-    // initialize MPU-9250 driver
-    mpu9250_init(&twi_mngr_instance);
-    printf("MPU-9250 initialized\n");
-
 
     // Enter main loop.
     for (;;)

@@ -52,35 +52,62 @@
 #include <stdint.h>
 
 #include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
 #include "task.h"
 #include "timers.h"
 #include "bsp.h"
 #include "nordic_common.h"
-#include "nrf_drv_clock.h"
+
 #include "sdk_errors.h"
 #include "app_error.h"
+#include "nrf.h"
+#include "nrf_delay.h"
+#include "nrf_drv_clock.h"
+#include "nrfx_gpiote.h"
+#include "nrf_gpio.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+#include "nrf_pwr_mgmt.h"
+#include "nrf_serial.h"
 
-#if LEDS_NUMBER <= 2
-#error "Board is not equipped with enough amount of LEDs"
-#endif
+#include "buckler.h"
 
-#define TASK_DELAY        200           /**< Task delay. Delays a LED0 task for 200 ms */
-#define TIMER_PERIOD      1000          /**< Timer period. LED1 timer will expire after 1000 ms */
+// LED array
+static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
+
+#define TASK_DELAY        500           /**< Task delay. Delays a LED0 task for 200 ms */
+#define TIMER_PERIOD      5000          /**< Timer period. timer will expire after 1000 ms */
 
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
 TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS timer. */
 
-/**@brief LED0 task entry function.
+
+static void initialize_leds(void) {
+    // initialize GPIO driver
+    static ret_code_t error_code;
+    if (!nrfx_gpiote_is_init()) {
+        error_code = nrfx_gpiote_init();
+    }
+    APP_ERROR_CHECK(error_code);
+    // configure leds
+    // manually-controlled (simple) output, initially set
+    nrfx_gpiote_out_config_t out_config = NRFX_GPIOTE_CONFIG_OUT_SIMPLE(true);
+    for (int i=0; i<3; i++) {
+        error_code = nrfx_gpiote_out_init(LEDS[i], &out_config);
+        APP_ERROR_CHECK(error_code);
+    }
+    return;
+}
+
+/**@brief LED task entry function.
  *
  * @param[in] pvParameter   Pointer that will be used as the parameter for the task.
  */
-static void led_toggle_task_function (void * pvParameter)
-{
+static void led_toggle_task_function (void * pvParameter) {
     UNUSED_PARAMETER(pvParameter);
-    while (true)
-    {
-        bsp_board_led_invert(BSP_BOARD_LED_0);
-
+    while (true) {
+        nrf_gpio_pin_toggle(LEDS[0]);
         /* Delay a task for a given number of ticks */
         vTaskDelay(TASK_DELAY);
 
@@ -88,32 +115,31 @@ static void led_toggle_task_function (void * pvParameter)
     }
 }
 
-/**@brief The function to call when the LED1 FreeRTOS timer expires.
+/**@brief The function to call when the LED FreeRTOS timer expires.
  *
  * @param[in] pvParameter   Pointer that will be used as the parameter for the timer.
  */
 static void led_toggle_timer_callback (void * pvParameter)
 {
     UNUSED_PARAMETER(pvParameter);
-    bsp_board_led_invert(BSP_BOARD_LED_1);
+    nrf_gpio_pin_toggle(LEDS[1]);
 }
 
 int main(void)
 {
-    ret_code_t err_code;
+    ret_code_t err_code = NRF_SUCCESS;
 
     /* Initialize clock driver for better time accuracy in FREERTOS */
     err_code = nrf_drv_clock_init();
     APP_ERROR_CHECK(err_code);
 
-    /* Configure LED-pins as outputs */
-    bsp_board_leds_init();
-    bsp_board_leds_off();
+    // initialize GPIO
+    initialize_leds();
 
-    /* Create task for LED0 blinking with priority set to 2 */
+    /* Create task for LED blinking with priority set to 2 */
     UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 2, &led_toggle_task_handle));
 
-    /* Start timer for LED1 blinking */
+    /* Start timer for LED blinking */
     led_toggle_timer_handle = xTimerCreate( "LED1", TIMER_PERIOD, pdTRUE, NULL, led_toggle_timer_callback);
     UNUSED_VARIABLE(xTimerStart(led_toggle_timer_handle, 0));
 
