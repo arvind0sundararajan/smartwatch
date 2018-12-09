@@ -72,8 +72,8 @@ int main(void) {
     // //temperature = ms5637_get_temperature();
     // printf("Pressure in mbar: %f, ms temperature in celsius: %f \n, ",pressure, ms_temperature);
     mpu9250_measurement_t gyr_measurement = mpu9250_read_gyro();
-    //__WFE();
-
+    // //__WFE();
+    //
     float x_rot_amount = gyr_measurement.x_axis/10;
     if (abs(x_rot_amount) > 0.5)
     {
@@ -93,6 +93,10 @@ int main(void) {
     printf("                      X-Axis\t    Y-Axis\t    Z-Axis\n");
     printf("                  ----------\t----------\t----------\n");
     printf("Angle  (degrees): %10.3f\t%10.3f\t%10.3f\n", x_rot, y_rot, z_rot);
-    nrf_delay_ms(100);
+
+    // if(x_rot_amount > 50 && y_rot_amount < 40 && z_rot_amount < 40){
+    //   printf("Rotation made, start watch! \n");
+    // }
+    nrf_delay_ms(200);
   }
 }
