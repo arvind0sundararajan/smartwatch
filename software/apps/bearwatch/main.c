@@ -78,6 +78,7 @@
 
 #include "accelerometer.h"
 #include "smartwatch_ble_main.h"
+#include "sensors.h"
 
 
 // LED array
@@ -173,6 +174,11 @@ int main(void)
     display_write("Welcome to", DISPLAY_LINE_0);
     display_write("BearWatch", DISPLAY_LINE_1);
     
+
+    printf("sensors\n");
+    sensors_init();
+    printf("sensors done\n");
+
     smartwatch_ble_main();
     accelerometer_main();
 
