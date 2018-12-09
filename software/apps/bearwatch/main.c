@@ -93,10 +93,10 @@ TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS
 
 /**@brief Function for initializing the nrf log module. (RTT)
  */
-static void log_init(void)
+static void log_init(ret_code_t error_code)
 {
-    ret_code_t err_code = NRF_LOG_INIT(NULL);
-    APP_ERROR_CHECK(err_code);
+    error_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(error_code);
 
     NRF_LOG_DEFAULT_BACKENDS_INIT();
     printf("Log initialized\n");
@@ -129,23 +129,22 @@ static void smartwatch_display_init(ret_code_t error_code) {
 }
 
 /* initialize the app_timers module */
-static void timers_init(void) {
-	ret_code_t err_code;
+static void timers_init(ret_code_t error_code) {
 	/* Initialize clock driver for better time accuracy in FREERTOS */
-    err_code = nrf_drv_clock_init();
-    APP_ERROR_CHECK(err_code);
+    error_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(error_code);
 
     /* Request LF clock */
     nrf_drv_clock_lfclk_request(NULL);
 
-    err_code = app_timer_init();
-    APP_ERROR_CHECK(err_code);
+    error_code = app_timer_init();
+    APP_ERROR_CHECK(error_code);
 }
 
 
-static void initialize_leds(void) {
+/* Initialize GPIO and LEDs*/
+static void gpio_init(ret_code_t error_code) {
     // initialize GPIO driver
-    static ret_code_t error_code;
     if (!nrfx_gpiote_is_init()) {
         error_code = nrfx_gpiote_init();
     }
@@ -190,18 +189,19 @@ int main(void)
     ret_code_t err_code = NRF_SUCCESS;
 
     /* initialize nrf log module */
-    log_init();
+    log_init(err_code);
 
     /* Initialize the display. */
     smartwatch_display_init(err_code);
 
     /* initialize app_timers */
-    timers_init();
+    timers_init(err_code);
 
     // initialize GPIO
-    initialize_leds();
+    gpio_init(err_code);
 
-    display_write("BearWatch", DISPLAY_LINE_0);
+    display_write("Welcome to", DISPLAY_LINE_0);
+    display_write("BearWatch", DISPLAY_LINE_1);
     accelerometer_main();
 
     /* Create task for LED blinking with priority set to 2 */
