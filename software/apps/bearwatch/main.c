@@ -202,7 +202,9 @@ int main(void)
 
     display_write("Welcome to", DISPLAY_LINE_0);
     display_write("BearWatch", DISPLAY_LINE_1);
-    accelerometer_main();
+    
+    smartwatch_ble_main();
+    //accelerometer_main();
 
     /* Create task for LED blinking with priority set to 2 */
     UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 2, &led_toggle_task_handle));

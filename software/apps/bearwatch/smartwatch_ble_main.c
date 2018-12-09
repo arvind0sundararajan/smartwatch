@@ -87,6 +87,8 @@
 
 #include "smartwatch_ble_service_manager.h"
 
+#include "display.h"
+
 
 #define BUCKLER_SENSORS_SCL     NRF_GPIO_PIN_MAP(0,19)
 #define BUCKLER_SENSORS_SDA     NRF_GPIO_PIN_MAP(0,20)
@@ -865,6 +867,9 @@ static void smartwatch_ble_init(void) {
 int smartwatch_ble_main(void)
 {
 	smartwatch_ble_init();
+
+	/* display test */
+	display_write("BLE initialized", DISPLAY_LINE_0);
 
     // Enter main loop.
     for (;;)

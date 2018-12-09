@@ -23,6 +23,7 @@
 #include "nrf_drv_clock.h"
 
 #include "buckler.h"
+#include "display.h"
 
 /* Single shot timer used for interval after footstep */
 APP_TIMER_DEF(footstep_timer);
@@ -106,6 +107,11 @@ static void accelerometer_init(void){
 
 	// initialization complete
 	printf("Buckler initialized!\n");
+
+	/* display test
+	display_write("Accelerometer", DISPLAY_LINE_0);
+	display_write("Initialized", DISPLAY_LINE_1);
+	*/
 }
 
 
@@ -114,18 +120,17 @@ int accelerometer_main (void) {
 
 	//uint32_t err_code;
 
-
-  uint32_t max = 0;
-  uint32_t min = UINT32_MAX;
-  uint32_t footstep_threshold = 0;
-  int no_of_footsteps = 0;
-  int print_counter = 0;
-  int max_min_update_counter = 0;
-  uint32_t cum_sum = 0;
-  uint32_t avg_sum = 0;
-  uint32_t sample_old = 0;
-  uint32_t sample_new = 0;
-  uint32_t precision = 100;
+	uint32_t max = 0;
+	uint32_t min = UINT32_MAX;
+	uint32_t footstep_threshold = 0;
+	int no_of_footsteps = 0;
+	int print_counter = 0;
+	int max_min_update_counter = 0;
+	uint32_t cum_sum = 0;
+	uint32_t avg_sum = 0;
+	uint32_t sample_old = 0;
+	uint32_t sample_new = 0;
+	uint32_t precision = 100;
 
   /* CALIBRATION */
   // for(int i = 0; i < 200; i++){
@@ -149,6 +154,7 @@ int accelerometer_main (void) {
   // }
 
   while (1) {
+
     //Low pass filter, averaging the inputs
     for(int i = 0; i < 4; i++){
       // sample analog inputs
@@ -184,6 +190,7 @@ int accelerometer_main (void) {
 
     if(print_counter == 10){
       printf("no_of_footsteps: %d\n", no_of_footsteps);
+
       printf("max: %ld\n", max);
       printf("min: %ld\n", min);
       printf("sample new: %ld\n", sample_new);
