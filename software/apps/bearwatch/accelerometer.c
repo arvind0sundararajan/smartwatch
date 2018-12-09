@@ -25,6 +25,8 @@
 #include "buckler.h"
 #include "display.h"
 
+#include "smartwatch_ble_service_manager.h"
+
 /* Single shot timer used for interval after footstep */
 APP_TIMER_DEF(footstep_timer);
 /* Footstep indicator */
@@ -160,15 +162,20 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 
-    printf("no_of_footsteps: %d\n", no_of_footsteps);
+  printf("no_of_footsteps: %d\n", no_of_footsteps);
 
-    printf("max: %ld\n", max);
-    printf("min: %ld\n", min);
-    printf("sample new: %ld\n", sample_new);
-    printf("sample old: %ld\n", sample_old);
-    printf("footstep footstep_threshold: %ld\n", footstep_threshold);
-    nrf_delay_ms(10);
-    print_counter = 0;
+  smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+
+  printf("max: %ld\n", max);
+  printf("min: %ld\n", min);
+  printf("sample new: %ld\n", sample_new);
+  printf("sample old: %ld\n", sample_old);
+  printf("footstep footstep_threshold: %ld\n", footstep_threshold);
+
+  #
+
+  nrf_delay_ms(10);
+  print_counter = 0;
   if(max_min_update_counter > 50){
     if(sample_new > max){
       max = sample_new;
