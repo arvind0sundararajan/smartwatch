@@ -5,16 +5,20 @@
 #include "nordic_common.h"
 #include "sdk_common.h"
 #include "nrf_gpio.h"
+#include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <ble_gatts.h>
+#include "ble_srv_common.h"
 
 
 #include "smartwatch_ble_service.h"
 
 /* Custom services */
-#include "smartwatch_test_service.h"
-#include "smartwatch_test_service_2.h"
+#include "smartwatch_timer_service.h"
+#include "smartwatch_footstep_service.h"
 
-smartwatch_ble_service timer_service;
-smartwatch_ble_service test_service_2;
 smartwatch_ble_service test_service_3;
 
 smartwatch_ble_service* custom_services[3];

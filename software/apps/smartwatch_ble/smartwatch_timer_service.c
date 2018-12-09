@@ -1,4 +1,4 @@
-#include "smartwatch_test_service.h"
+#include "smartwatch_timer_service.h"
 // #include "sdk_common.h"
 // #include "ble_cus.h"
 #include <string.h>

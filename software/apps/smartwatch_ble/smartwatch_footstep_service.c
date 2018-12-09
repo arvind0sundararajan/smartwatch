@@ -1,4 +1,4 @@
-#include "smartwatch_test_service_2.h"
+#include "smartwatch_footstep_service.h"
 // #include "sdk_common.h"
 // #include "ble_cus.h"
 #include <string.h>
@@ -11,13 +11,13 @@
 // #include "boards.h"
 // #include "nrf_log.h"
 
-void test_service_2_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
+void footstep_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
 
 	smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
 	ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-	if (service != &test_service_2) {
+	if (service != &footstep_service) {
 		return;
 	}
 

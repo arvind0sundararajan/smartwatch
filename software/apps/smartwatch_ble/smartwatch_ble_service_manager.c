@@ -16,18 +16,18 @@ void services_init(void)
         &timer_service
     );
 
-    ble_service_params test_service_2_params = {
+    ble_service_params footstep_service_params = {
         .base_service_uuid = 0x1500,
-        .evt_handler = test_service_2_evt_handler,
+        .evt_handler = footstep_service_evt_handler,
         .uuid = {
             {0x20, 0x73, 0x03, 0xc7, 0x3d, 0x90, 0xfa, 0x9c, 0x40, 0x45, 0xf6, 0xea, 0x8e, 0x2e, 0x85, 0xc4}
             }
     };
-    smartwatch_ble_service_init(&test_service_2_params, &test_service_2);
-    NRF_SDH_BLE_OBSERVER(test_service_2_obs,
+    smartwatch_ble_service_init(&footstep_service_params, &footstep_service);
+    NRF_SDH_BLE_OBSERVER(footstep_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
-        test_service_2_evt_handler,
-        &test_service_2
+        footstep_service_evt_handler,
+        &footstep_service
     );
 
     ble_service_params test_service_3_params = {
@@ -45,8 +45,8 @@ void services_init(void)
     );
 
     custom_services[0] = &timer_service;
-    custom_services[1] = &test_service_2;
-    custom_services[2] = &test_service_3;
+    custom_services[1] = &footstep_service;
+    // custom_services[2] = &test_service_3;
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
