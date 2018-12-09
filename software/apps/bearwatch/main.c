@@ -50,6 +50,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
@@ -63,6 +64,7 @@
 #include "nrf.h"
 #include "nrf_delay.h"
 #include "nrf_drv_clock.h"
+#include "nrf_drv_spi.h"
 #include "nrfx_gpiote.h"
 #include "nrf_gpio.h"
 #include "nrf_log.h"
@@ -72,6 +74,7 @@
 #include "nrf_serial.h"
 
 #include "buckler.h"
+#include "display.h"
 
 #include "accelerometer.h"
 #include "smartwatch_ble_main.h"
@@ -88,7 +91,7 @@ TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS
 
 /* INIT FUNCTIONS */
 
-/**@brief Function for initializing the nrf log module.
+/**@brief Function for initializing the nrf log module. (RTT)
  */
 static void log_init(void)
 {
@@ -96,7 +99,33 @@ static void log_init(void)
     APP_ERROR_CHECK(err_code);
 
     NRF_LOG_DEFAULT_BACKENDS_INIT();
-    printf("Log started\n");
+    printf("Log initialized\n");
+}
+
+
+/* Initialize the display.
+ */
+static void smartwatch_display_init(ret_code_t error_code) {
+	// initialize spi master
+	nrf_drv_spi_t spi_instance = NRF_DRV_SPI_INSTANCE(1);
+	nrf_drv_spi_config_t spi_config = {
+		.sck_pin = BUCKLER_LCD_SCLK,
+		.mosi_pin = BUCKLER_LCD_MOSI,
+		.miso_pin = BUCKLER_LCD_MISO,
+		.ss_pin = BUCKLER_LCD_CS,
+		.irq_priority = NRFX_SPI_DEFAULT_CONFIG_IRQ_PRIORITY,
+		.orc = 0,
+		.frequency = NRF_DRV_SPI_FREQ_4M,
+		.mode = NRF_DRV_SPI_MODE_2,
+		.bit_order = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST
+  	};
+	error_code = nrf_drv_spi_init(&spi_instance, &spi_config, NULL, NULL);
+	APP_ERROR_CHECK(error_code);
+
+	// initialize display driver
+	display_init(&spi_instance);
+	printf("Display initialized\n");
+	nrf_delay_ms(1000);
 }
 
 /* initialize the app_timers module */
@@ -158,10 +187,13 @@ static void led_toggle_timer_callback (void * pvParameter)
 
 int main(void)
 {
-    //ret_code_t err_code = NRF_SUCCESS;
+    ret_code_t err_code = NRF_SUCCESS;
 
     /* initialize nrf log module */
     log_init();
+
+    /* Initialize the display. */
+    smartwatch_display_init(err_code);
 
     /* initialize app_timers */
     timers_init();
@@ -169,6 +201,7 @@ int main(void)
     // initialize GPIO
     initialize_leds();
 
+    display_write("BearWatch", DISPLAY_LINE_0);
     accelerometer_main();
 
     /* Create task for LED blinking with priority set to 2 */
