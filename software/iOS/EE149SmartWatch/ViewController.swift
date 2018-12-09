@@ -22,11 +22,11 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }()
     
     enum ServiceID: String {
-        case TIMER = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
-        case STEPS = "C4851500-EAF6-4540-9CFA-903DC7037320"
-        case TEMP = "1"
-        case PRESSURE = "2"
-        case HUMIDITY = "3"
+        case TIMER    = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
+        case STEPS    = "C4851500-EAF6-4540-9CFA-903DC7037320"
+        case TEMP     = "05051600-484D-5987-969E-B6D3E4E7FDFE"
+        case PRESSURE = "00041600-3542-5A73-86A4-B0C1C4CACFE2"
+        case HUMIDITY = "181A1600-4346-5E75-798D-A0AEB8B8DFEB"
     }
 
     
@@ -45,6 +45,22 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     var services = [ServiceID:CBService]()
     
+    var history : [ServiceID:[UInt32]] = [
+        ServiceID.TIMER: [UInt32](),
+        ServiceID.STEPS: [UInt32](),
+        ServiceID.TEMP: [UInt32](),
+        ServiceID.PRESSURE: [UInt32](),
+        ServiceID.HUMIDITY: [UInt32]()
+    ]
+    
+//    var notificationsSet : [ServiceID: Bool] = [
+//        ServiceID.TIMER: false,
+//        ServiceID.STEPS: false,
+//        ServiceID.TEMP: false,
+//        ServiceID.PRESSURE: false,
+//        ServiceID.HUMIDITY: false
+//    ]
+//    
     var buckler : CBPeripheral! {
         didSet {
             manager.connect(buckler, options: nil)
@@ -65,6 +81,21 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         collectionView?.register(BasicCell.self, forCellWithReuseIdentifier: CellId.BasicCell.rawValue)
         
         manager = CBCentralManager.init(delegate: self, queue: nil)
+        
+        // Add to Navigaition Bar
+        
+        self.title = "Hello"
+        self.navigationItem.leftBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(ViewController.getHistory))
+        ]
+    }
+    
+    @objc
+    func getHistory() {
+        for (id, hist) in history.enumerated() {
+            print("\(id) \t \(hist)")
+        }
+        print("=====")
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -79,6 +110,7 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         cell.parameter = names[serviceId] ?? "Fuck"
         cell.viewController = self
         cell.serviceId = serviceId
+        cell.notificationOn = true
         return cell
 //        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.GraphCell.rawValue, for: indexPath) as! GraphCell
 //        if let data = dataForGraphCells[indexPath.item] {
@@ -209,15 +241,18 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         print("Discovered Characteristics")
-        if let discoveredCharacteristics = service.characteristics {
-            peripheral.setNotifyValue(true, for: discoveredCharacteristics[0])
+        if let discoveredCharacteristic = service.characteristics?[0] {
+            peripheral.setNotifyValue(true, for: discoveredCharacteristic)
         }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if var readData = characteristic.value {
+        print(characteristic.service.uuid.uuidString)
+        if let readData = characteristic.value {
             let value = UInt32(littleEndian: readData.withUnsafeBytes( { $0.pointee }))
-            if let serviceId = ServiceID(rawValue: characteristic.service.uuid.uuidString) {
+            if let serviceId = ServiceID(rawValue: characteristic.service.uuid.uuidString),
+                let _ = history[serviceId] {
+                history[serviceId]!.append(value)
                 printValue(str: "\(value)\n", forCell: serviceId)
             } else {
                 print("didUpdateValueFor Not working")
@@ -229,8 +264,10 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     @objc
     func updateTimer() {
 //        for service in services.values {
-//            if let char = service.characteristics?[0] {
-//                buckler.readValue(for: char)
+//            if service.uuid.uuidString == ServiceID.TIMER.rawValue {
+//                if let char = service.characteristics?[0] {
+//                    buckler.readValue(for: char)
+//                }
 //            }
 //        }
     }

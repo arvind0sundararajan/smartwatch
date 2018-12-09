@@ -234,7 +234,28 @@ class BasicCell : UICollectionViewCell {
     var serviceId : ViewController.ServiceID?
     var viewController: ViewController?
     
-    var notificationOn  = false
+    var notificationOn  = false {
+        didSet {
+            if let vc = self.viewController {
+                if let buckler = vc.buckler,
+                    let serviceId = self.serviceId,
+                    let service = vc.services[serviceId],
+                    let characteristic = service.characteristics?[0]
+                {
+                    if notificationOn {
+                        buckler.setNotifyValue(false, for: characteristic)
+                        subscribeButton.setTitle("Subscribe?", for: .normal)
+                    } else {
+                        buckler.setNotifyValue(true, for: characteristic)
+                        subscribeButton.setTitle("Subscribed", for: .normal)
+                    }
+                    notificationOn = !notificationOn
+                }
+            } else {
+                notificationOn = !notificationOn // Undo the effect
+            }
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -261,28 +282,14 @@ class BasicCell : UICollectionViewCell {
     let subscribeButton : UIButton = {
         let button = UIButton()
         button.setTitle("Subscribe?", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.setTitleColor(.red, for: .selected)
+        button.setTitleColor(.blue, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     @objc
     func subscribeButtonEvtHandler() {
-        if let vc = self.viewController {
-            if let buckler = vc.buckler,
-                let serviceId = self.serviceId,
-                let service = vc.services[serviceId],
-                let characteristic = service.characteristics?[0]
-            {
-                if notificationOn {
-                    buckler.setNotifyValue(false, for: characteristic)
-                } else {
-                    buckler.setNotifyValue(true, for: characteristic)
-                }
-                notificationOn = !notificationOn
-            }
-        }
+        self.notificationOn = !self.notificationOn
     }
     
     let valueTextView : UITextView = {
@@ -292,6 +299,7 @@ class BasicCell : UICollectionViewCell {
         view.isSelectable = false
         view.font = UIFont.monospacedDigitSystemFont(ofSize: CGFloat(30), weight: .bold)
         view.text = "0000000000"
+        view.isScrollEnabled = false
         return view
     }()
     
