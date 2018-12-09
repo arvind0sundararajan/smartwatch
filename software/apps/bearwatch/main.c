@@ -78,6 +78,7 @@
 
 #include "accelerometer.h"
 #include "smartwatch_ble_main.h"
+#include "datetime.h"
 
 
 // LED array
@@ -200,10 +201,11 @@ int main(void)
     // initialize GPIO
     gpio_init(err_code);
 
-    display_write("Welcome to", DISPLAY_LINE_0);
-    display_write("BearWatch", DISPLAY_LINE_1);
+    display_write("BearWatch", DISPLAY_LINE_0);
     
-    smartwatch_ble_main();
+    printf("Initializing datetime\n");
+    datetime_main();
+    //smartwatch_ble_main();
     //accelerometer_main();
 
     /* Create task for LED blinking with priority set to 2 */
@@ -216,9 +218,10 @@ int main(void)
     /* Activate deep sleep mode */
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
 
+    printf("Starting scheduler..\n");
     /* Start FreeRTOS scheduler. */
     vTaskStartScheduler();
-
+    printf("FreeRTOS scheduler started.\n");
     while (true)
     {
         /* FreeRTOS should not be here... FreeRTOS goes back to the start of stack
