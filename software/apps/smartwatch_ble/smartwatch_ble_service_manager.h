@@ -18,8 +18,9 @@
 /* Custom services */
 #include "smartwatch_timer_service.h"
 #include "smartwatch_footstep_service.h"
-
-smartwatch_ble_service test_service_3;
+#include "smartwatch_pressure_service.h"
+#include "smartwatch_temp_service.h"
+#include "smartwatch_humidity_service.h"
 
 smartwatch_ble_service* custom_services[5];
 

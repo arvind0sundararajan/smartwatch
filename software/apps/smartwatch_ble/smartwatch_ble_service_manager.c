@@ -33,9 +33,9 @@ void services_init(void)
     );
 
     /* Pressure */
-    ble_service_params pressure_params = {
+    ble_service_params pressure_service_params = {
         .base_service_uuid = 0x1600,
-        .evt_handler = pressure_evt_handler,
+        .evt_handler = pressure_service_evt_handler,
         .uuid = {
            { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
        }
@@ -43,7 +43,7 @@ void services_init(void)
     smartwatch_ble_service_init(&pressure_service_params, &pressure_service);
     NRF_SDH_BLE_OBSERVER(pressure_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
-        pressure_evt_handler,
+        pressure_service_evt_handler,
         &pressure_service
     );
 
@@ -55,11 +55,11 @@ void services_init(void)
            { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
        }
     };
-    smartwatch_ble_service_init(&temp_service_params, &temp_service);
+    smartwatch_ble_service_init(&temp_service_params, &temperature_service);
     NRF_SDH_BLE_OBSERVER(temp_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         temp_service_evt_handler,
-        &temp_service
+        &temperature_service
     );
 
     /* Humidity */
@@ -80,6 +80,8 @@ void services_init(void)
     custom_services[0] = &timer_service;
     custom_services[1] = &footstep_service;
     custom_services[2] = &pressure_service;
+    custom_services[3] = &temperature_service;
+    custom_services[4] = &humidity_service;
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
