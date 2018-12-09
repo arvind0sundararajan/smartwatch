@@ -73,10 +73,14 @@
 
 #include "buckler.h"
 
+#include "accelerometer.h"
+#include "smartwatch_ble_main.h"
+
+
 // LED array
 static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
 
-#define TASK_DELAY        500           /**< Task delay. Delays a LED0 task for 200 ms */
+#define TASK_DELAY        20000           /**< Task delay. Delays a LED0 task for 200 ms */
 #define TIMER_PERIOD      1000          /**< Timer period. timer will expire after 1000 ms */
 
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
@@ -106,13 +110,13 @@ static void initialize_leds(void) {
  */
 static void led_toggle_task_function (void * pvParameter) {
     UNUSED_PARAMETER(pvParameter);
-    while (true) {
+    while(true) {
         nrf_gpio_pin_toggle(LEDS[0]);
         /* Delay a task for a given number of ticks */
         vTaskDelay(TASK_DELAY);
-
-        /* Tasks must be implemented to never return... */
     }
+
+    /* Tasks must be implemented to never return... */
 }
 
 /**@brief The function to call when the LED FreeRTOS timer expires.
@@ -136,11 +140,13 @@ int main(void)
     // initialize GPIO
     initialize_leds();
 
+    accelerometer_main();
+
     /* Create task for LED blinking with priority set to 2 */
     UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 2, &led_toggle_task_handle));
 
     /* Start timer for LED blinking */
-    led_toggle_timer_handle = xTimerCreate( "LED1", TIMER_PERIOD, pdTRUE, NULL, led_toggle_timer_callback);
+    led_toggle_timer_handle = xTimerCreate( "LED1", TIMER_PERIOD, pdFALSE, NULL, led_toggle_timer_callback);
     UNUSED_VARIABLE(xTimerStart(led_toggle_timer_handle, 0));
 
     /* Activate deep sleep mode */

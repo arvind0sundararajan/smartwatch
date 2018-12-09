@@ -278,13 +278,10 @@ static void notification_timeout_handler(void * p_context)
     // Increment the value of m_custom_value before nortifing it.
     m_custom_value++;
     NRF_LOG_INFO("timer handler %d", m_custom_value);
-
-    if (timer_service.conn_handle != BLE_CONN_HANDLE_INVALID) {
         err_code = smartwatch_ble_service_set_char_value(&footstep_service, m_custom_value);
         APP_ERROR_CHECK(err_code);
         // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
         // APP_ERROR_CHECK(err_code);
-    }
 }
 
 /**@brief Function for the Timer initialization.
