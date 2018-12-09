@@ -44,14 +44,10 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 	ble_uuid.type = service->uuid;
 	ble_uuid.uuid = service->base_service_uuid;
 
-	NRF_LOG_INFO("%d", ble_uuid.type);
-	NRF_LOG_INFO("%d", ble_uuid.uuid);
-
 	err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &service->service_handle);
 
 	if (err_code != NRF_SUCCESS) {
 		NRF_LOG_INFO("err_code")
-		NRF_LOG_INFO("%d", err_code);
 		return NRF_ERROR_NULL;
 	}
 
@@ -192,7 +188,6 @@ uint32_t smartwatch_ble_service_set_char_value(smartwatch_ble_service* ble_servi
 
 		sd_ble_gatts_hvx(ble_service->conn_handle, &hvx_params); // TODO: ERR_CODE?
 		NRF_LOG_INFO("sd_ble_gatts_hvx result: %x. \r\n", err_code);
-		NRF_LOG_INFO("%d", NRF_SUCCESS);
 
 	}
 

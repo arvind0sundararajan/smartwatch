@@ -9,7 +9,7 @@
 #include "ble_srv_common.h"
 // #include "nrf_gpio.h"
 // #include "boards.h"
-// #include "nrf_log.h"
+#include "nrf_log.h"
 
 void footstep_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
@@ -25,7 +25,7 @@ void footstep_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 		case BLE_GAP_EVT_DISCONNECTED:
 			break;
 		case BLE_GAP_EVT_CONNECTED:
-			printf("footstep service  connected");
+			NRF_LOG_INFO("footstep service  connected");
 			break;
 		case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
 			break;
