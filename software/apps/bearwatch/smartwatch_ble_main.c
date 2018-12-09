@@ -288,11 +288,10 @@ static void notification_timeout_handler(void * p_context)
  *
  * @details Initializes the timer module. This creates and starts application timers.
  */
-static void timers_init(void)
+static void ble_timers_init(void)
 {
     // Initialize timer module.
-    ret_code_t err_code = app_timer_init();
-    APP_ERROR_CHECK(err_code);
+    ret_code_t err_code;
 
     // Create timers.
     err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
@@ -839,7 +838,7 @@ static void advertising_start(bool erase_bonds)
 static void smartwatch_ble_init(void) {
 	bool erase_bonds;
 
-    timers_init();
+    ble_timers_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();

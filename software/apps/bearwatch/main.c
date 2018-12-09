@@ -99,6 +99,20 @@ static void log_init(void)
     printf("Log started\n");
 }
 
+/* initialize the app_timers module */
+static void timers_init(void) {
+	ret_code_t err_code;
+	/* Initialize clock driver for better time accuracy in FREERTOS */
+    err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+
+    /* Request LF clock */
+    nrf_drv_clock_lfclk_request(NULL);
+
+    err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+}
+
 
 static void initialize_leds(void) {
     // initialize GPIO driver
@@ -144,14 +158,13 @@ static void led_toggle_timer_callback (void * pvParameter)
 
 int main(void)
 {
-    ret_code_t err_code = NRF_SUCCESS;
+    //ret_code_t err_code = NRF_SUCCESS;
 
     /* initialize nrf log module */
     log_init();
 
-    /* Initialize clock driver for better time accuracy in FREERTOS */
-    err_code = nrf_drv_clock_init();
-    APP_ERROR_CHECK(err_code);
+    /* initialize app_timers */
+    timers_init();
 
     // initialize GPIO
     initialize_leds();

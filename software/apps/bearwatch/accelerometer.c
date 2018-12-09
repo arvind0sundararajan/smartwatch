@@ -34,10 +34,60 @@ bool was_footstep;
 #define Y_CHANNEL 1
 #define Z_CHANNEL 2
 
+
+/* INITIALIZATION FUNCTIONS */
+
 // callback for SAADC events
 void saadc_callback (nrfx_saadc_evt_t const * p_event) {
   // don't care about adc callbacks
 }
+
+static void adc_init(void) {
+	ret_code_t error_code = NRF_SUCCESS;
+	// initialize analog to digital converter
+	nrfx_saadc_config_t saadc_config = NRFX_SAADC_DEFAULT_CONFIG;
+	saadc_config.resolution = NRF_SAADC_RESOLUTION_12BIT;
+	error_code = nrfx_saadc_init(&saadc_config, saadc_callback);
+	APP_ERROR_CHECK(error_code);
+}
+
+static void analog_inputs_init(void) {
+	ret_code_t error_code = NRF_SUCCESS;
+	// initialize analog inputs
+	// configure with 0 as input pin for now
+	nrf_saadc_channel_config_t channel_config = NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(0);
+	channel_config.gain = NRF_SAADC_GAIN1_6; // input gain of 1/6 Volts/Volt, multiply incoming signal by (1/6)
+	channel_config.reference = NRF_SAADC_REFERENCE_INTERNAL; // 0.6 Volt reference, input after gain can be 0 to 0.6 Volts
+
+	// specify input pin and initialize that ADC channel
+	channel_config.pin_p = BUCKLER_ANALOG_ACCEL_X;
+	error_code = nrfx_saadc_channel_init(X_CHANNEL, &channel_config);
+	APP_ERROR_CHECK(error_code);
+
+	// specify input pin and initialize that ADC channel
+	channel_config.pin_p = BUCKLER_ANALOG_ACCEL_Y;
+	error_code = nrfx_saadc_channel_init(Y_CHANNEL, &channel_config);
+	APP_ERROR_CHECK(error_code);
+
+	// specify input pin and initialize that ADC channel
+	channel_config.pin_p = BUCKLER_ANALOG_ACCEL_Z;
+	error_code = nrfx_saadc_channel_init(Z_CHANNEL, &channel_config);
+	APP_ERROR_CHECK(error_code);
+}
+
+
+static void footstep_handler(){
+  was_footstep = false;
+}
+
+
+/* initialize the a ccelerometer timers. */
+static void accelerometer_timers_init(void) {
+	ret_code_t err_code;
+	err_code = app_timer_create(&footstep_timer, APP_TIMER_MODE_SINGLE_SHOT, footstep_handler);
+	APP_ERROR_CHECK(err_code);
+}
+
 
 // sample a particular analog channel in blocking mode
 nrf_saadc_value_t sample_value (uint8_t channel) {
@@ -47,53 +97,23 @@ nrf_saadc_value_t sample_value (uint8_t channel) {
   return val;
 }
 
-static void footstep_handler(){
-  was_footstep = false;
+
+/* initialize everything accelerometer needs. */
+static void accelerometer_init(void){
+	adc_init();
+	analog_inputs_init();
+	accelerometer_timers_init();
+
+	// initialization complete
+	printf("Buckler initialized!\n");
 }
 
+
 int accelerometer_main (void) {
-  ret_code_t error_code = NRF_SUCCESS;
+	accelerometer_init();
 
-  // initialize analog to digital converter
-  nrfx_saadc_config_t saadc_config = NRFX_SAADC_DEFAULT_CONFIG;
-  saadc_config.resolution = NRF_SAADC_RESOLUTION_12BIT;
-  error_code = nrfx_saadc_init(&saadc_config, saadc_callback);
-  APP_ERROR_CHECK(error_code);
+	//uint32_t err_code;
 
-  // initialize analog inputs
-  // configure with 0 as input pin for now
-  nrf_saadc_channel_config_t channel_config = NRFX_SAADC_DEFAULT_CHANNEL_CONFIG_SE(0);
-  channel_config.gain = NRF_SAADC_GAIN1_6; // input gain of 1/6 Volts/Volt, multiply incoming signal by (1/6)
-  channel_config.reference = NRF_SAADC_REFERENCE_INTERNAL; // 0.6 Volt reference, input after gain can be 0 to 0.6 Volts
-
-  // specify input pin and initialize that ADC channel
-  channel_config.pin_p = BUCKLER_ANALOG_ACCEL_X;
-  error_code = nrfx_saadc_channel_init(X_CHANNEL, &channel_config);
-  APP_ERROR_CHECK(error_code);
-
-  // specify input pin and initialize that ADC channel
-  channel_config.pin_p = BUCKLER_ANALOG_ACCEL_Y;
-  error_code = nrfx_saadc_channel_init(Y_CHANNEL, &channel_config);
-  APP_ERROR_CHECK(error_code);
-
-  // specify input pin and initialize that ADC channel
-  channel_config.pin_p = BUCKLER_ANALOG_ACCEL_Z;
-  error_code = nrfx_saadc_channel_init(Z_CHANNEL, &channel_config);
-  APP_ERROR_CHECK(error_code);
-
-  /*TIMER INTIALIZATION*/
-  uint32_t err_code;
-  err_code = nrf_drv_clock_init();
-  APP_ERROR_CHECK(err_code);
-  nrf_drv_clock_lfclk_request(NULL);
-  app_timer_init();
-  err_code = app_timer_create(&footstep_timer, APP_TIMER_MODE_SINGLE_SHOT, footstep_handler);
-  APP_ERROR_CHECK(err_code);
-
-
-
-  // initialization complete
-  printf("Buckler initialized!\n");
 
   uint32_t max = 0;
   uint32_t min = UINT32_MAX;
