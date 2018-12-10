@@ -21,11 +21,13 @@ NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 /* Gyro Rotation Values */
 static float x_rot, y_rot, z_rot;
 
+static void sensor_callback(void * p_context);
+
 /* Initializes TWI and sensor configurations. Call once before
 accessing any sensor data  */
 void sensors_init(void)
 {
-  uint32_t error_code;
+  uint32_t error_code = NRF_SUCCESS;
   /* TWI INITIALIZED */
   nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
   i2c_config.scl = BUCKLER_SENSORS_SCL;
@@ -35,11 +37,16 @@ void sensors_init(void)
   APP_ERROR_CHECK(error_code);
 
   /* POWER SET */
+  printf("dcdcen\n");
   nrf_power_dcdcen_set(1);
   nrf_delay_ms(20);
+  printf("init\n");
   si7021_init(&twi_mngr_instance);
+  printf("confi\n");
   si7021_config(si7021_mode0);
+  printf("msinit\n");
   ms5637_init(&twi_mngr_instance, osr_8192);
+  printf("start\n");
   ms5637_start();
   mpu9250_init(&twi_mngr_instance);
 
@@ -113,4 +120,14 @@ void get_rotation_gyro(float * arr)
   arr[0] = x_rot;
   arr[1] = y_rot;
   arr[2] = z_rot;
+}
+
+static void sensor_callback(void * p_context) {
+  printf("sensor coa");
+  // float temp = read_temperature();
+
+  // uint32_t t;
+  // memcpy(&t, &temp, sizeof(t));
+
+  // smartwatch_ble_service_set_char_value(&temperature_service, t);
 }
