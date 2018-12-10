@@ -159,16 +159,17 @@ int si7021_read_temp_after_RH (float* temp) {
 
   printf("temp hum data [0] %d\n", temp_hum_data[0]);
   printf("temp hum data [1] %d\n", temp_hum_data[1]);
+  printf("temp hum data [2] %d\n", temp_hum_data[2]);
 
   *temp = -46.85 + (175.72 * (((uint32_t) temp_hum_data[0] << 8) | ((uint32_t) temp_hum_data[1] & 0xfc)) / (1 << 16));
-  printf("temperatuer value: %f", -46.85 + (175.72 * (((uint32_t) temp_hum_data[0] << 8) | ((uint32_t) temp_hum_data[1] & 0xfc)) / (1 << 16)));
+  printf("temperatuer value: %d\n", (int)*temp);
 
   return NRF_SUCCESS;
 }
 //
 int si7021_read_temp_and_RH (float* temp, float* hum) {
   ret_code_t err_code;
-  // si7021_read_RH_hold(hum);
+  si7021_read_RH_hold(hum);
   err_code = si7021_read_temp_after_RH(temp); //employ read temp after RH shortcut
   return err_code;
 }

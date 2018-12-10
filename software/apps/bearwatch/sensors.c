@@ -140,8 +140,10 @@ static void sensor_callback(void * p_context) {
   // printf("\tsensor coa\n");
   float temp = read_temperature();
   float humidity = read_humidity();
-  printf("\t%f\n", temp);
-  printf("\thumiidyt %f\n", humidity);
+  float presure = read_pressure();
+  printf("\t%d\n", (int)temp);
+  printf("\thumiidyt %d\n", (int)(humidity));
+  printf("\tpressure %d\n", (int)presure);
 
   // uint32_t t;
   // memcpy(&t, &temp, sizeof(t));

@@ -181,8 +181,8 @@ int main(void)
     printf("sensors done\n");
 
 
-    // smartwatch_ble_main();
-    // accelerometer_main();
+    smartwatch_ble_main();
+    accelerometer_main();
 
     while (true)
     {
