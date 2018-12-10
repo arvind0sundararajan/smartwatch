@@ -49,10 +49,8 @@ void si7021_init (const nrf_twi_mngr_t* instance) {
 void si7021_config (si7021_meas_res_t res_mode) {
   uint8_t res1, res0;
   uint8_t reg_status;
-  printf("read user reg\n");
   si7021_read_user_reg(&reg_status);
 
-  printf("res\n");
   res1 = (res_mode & 0x2) << 6;
   res0 = res_mode & 0x1;
 
@@ -76,6 +74,8 @@ void si7021_read_temp_hold (float* temp) {
 
   uint8_t command = Meas_Temp_Hold_Master;
   uint8_t temp_hum_data[3] = {0x00, 0x00, 0x00};
+
+  printf("%d", command);
 
   nrf_twi_mngr_transfer_t const read_temp_hold_transfer[] = {
     NRF_TWI_MNGR_WRITE(SI7021_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
@@ -135,26 +135,41 @@ void si7021_read_RH_hold (float* hum) {
 //
 //
 int si7021_read_temp_after_RH (float* temp) {
-uint8_t command = Read_Temp_From_Prev_RH;
+  uint8_t command = Read_Temp_From_Prev_RH;
   uint8_t temp_hum_data[3] = {0, 0, 0};
+
+  printf("Hello\n");
 
   nrf_twi_mngr_transfer_t const read_temp_after_rh[] = {
     NRF_TWI_MNGR_WRITE(SI7021_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
-    NRF_TWI_MNGR_READ(SI7021_ADDR, temp_hum_data, 3, 0),
+    NRF_TWI_MNGR_READ(SI7021_ADDR, temp_hum_data, 3, 0)
   };
+
+  printf("NRF_twi_mngr_write, read\n");
+  printf("%d\n", NRF_TWI_MNGR_ENABLED);
+
   int error;
   error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, read_temp_after_rh, 2, NULL);
   if (error != NRF_SUCCESS) {
+    printf("error");
     return error;
   }
 
+  printf("nrf_twi_mngr_perform\n");
+
+  printf("temp hum data [0] %d\n", temp_hum_data[0]);
+  printf("temp hum data [1] %d\n", temp_hum_data[1]);
+  printf("temp hum data [2] %d\n", temp_hum_data[2]);
+
   *temp = -46.85 + (175.72 * (((uint32_t) temp_hum_data[0] << 8) | ((uint32_t) temp_hum_data[1] & 0xfc)) / (1 << 16));
+  printf("temperatuer value: %d\n", (int)*temp);
+
   return NRF_SUCCESS;
 }
 //
 int si7021_read_temp_and_RH (float* temp, float* hum) {
   ret_code_t err_code;
-  // si7021_read_RH_hold(hum);
+  si7021_read_RH_hold(hum);
   err_code = si7021_read_temp_after_RH(temp); //employ read temp after RH shortcut
   return err_code;
 }
@@ -162,20 +177,15 @@ int si7021_read_temp_and_RH (float* temp, float* hum) {
 //
 void si7021_read_user_reg (uint8_t* user_reg) {
   uint8_t command = Read_User_Reg_1;
-  printf("read user reg instea");
-
-  
 
   nrf_twi_mngr_transfer_t const read_user_reg_transfer[] = {
     NRF_TWI_MNGR_WRITE(SI7021_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
     NRF_TWI_MNGR_READ(SI7021_ADDR, user_reg, 1, 0),
   };
-  printf("after transfer");
   int error;
   do {
     error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, read_user_reg_transfer, 2, NULL);
   } while (error != NRF_SUCCESS);
-  printf("finish reg user\n");
 }
 
 //

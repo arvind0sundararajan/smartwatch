@@ -165,7 +165,8 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 
-  printf("no_of_footsteps: %d\n", no_of_footsteps);
+  printf("no of footsteps %d", no_of_footsteps);
+
   if (no_of_footsteps > 25) {
     smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
   } else if (no_of_footsteps % 5 == 0) {
@@ -227,6 +228,7 @@ void accelerometer_main (void) {
   APP_ERROR_CHECK(err_code);
 
   err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
+  printf("accelerometer timer creatd");
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
 }

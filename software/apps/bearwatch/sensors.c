@@ -15,8 +15,16 @@
 #include "ms5637.h"
 #include "mpu9250.h"
 
+#include "app_timer.h"
+#include "app_scheduler.h"
+#include "nrf_gpio.h"
+
 /* TODO; move to init function */
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
+
+APP_TIMER_DEF(sensor_timer_id);
+
+static uint8_t LEDS_SENSOR[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
 
 /* Gyro Rotation Values */
 static float x_rot, y_rot, z_rot;
@@ -27,14 +35,15 @@ static void sensor_callback(void * p_context);
 accessing any sensor data  */
 void sensors_init(void)
 {
-  uint32_t error_code = NRF_SUCCESS;
+  uint32_t err_code = NRF_SUCCESS;
   /* TWI INITIALIZED */
   nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
   i2c_config.scl = BUCKLER_SENSORS_SCL;
   i2c_config.sda = BUCKLER_SENSORS_SDA;
-  i2c_config.frequency = NRF_TWIM_FREQ_400K;
-  error_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
-  APP_ERROR_CHECK(error_code);
+  i2c_config.frequency = NRF_TWIM_FREQ_100K;
+  i2c_config.interrupt_priority = APP_IRQ_PRIORITY_HIGHEST;
+  err_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
+  APP_ERROR_CHECK(err_code);
 
   /* POWER SET */
   printf("dcdcen\n");
@@ -50,15 +59,21 @@ void sensors_init(void)
   ms5637_start();
   mpu9250_init(&twi_mngr_instance);
 
+  /* Create sensor timers */
+  err_code = app_timer_create(&sensor_timer_id, APP_TIMER_MODE_REPEATED, sensor_callback);
+  APP_ERROR_CHECK(err_code);
+  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(500), NULL);
+  APP_ERROR_CHECK(err_code);
 }
 
 /* Reads temperature off si7021 in Celsius */
-int read_temperature(float* temperature)
+void read_temperature(float* data)
 {
   ret_code_t err_code;
-  float humidity;
-  err_code = si7021_read_temp_and_RH(temperature, &humidity);
-  return err_code;
+  float temperature, humidity;
+  si7021_read_temp_and_RH(&temperature, &humidity);
+  data[0] = temperature;
+  data[1] = humidity;
 
 }
 
@@ -123,11 +138,25 @@ void get_rotation_gyro(float * arr)
 }
 
 static void sensor_callback(void * p_context) {
-  printf("sensor coa");
-  // float temp = read_temperature();
+  printf("sensor callback");
+  nrf_gpio_pin_toggle(LEDS_SENSOR[0]);
+  printf("gpio done");
+  // printf("\tsensor coa\n");
+  float* data;
+  read_temperature(data);
+  float presure = read_pressure();
+  printf("\t%d\n", (int)data[0]);
+  printf("\thumiidyt %d\n", (int)(data[1]));
+  printf("\tpressure %d\n", (int)presure);
 
   // uint32_t t;
   // memcpy(&t, &temp, sizeof(t));
 
   // smartwatch_ble_service_set_char_value(&temperature_service, t);
+}
+
+void sensor_scheduler_event_handler(void *p_event_data, uint16_t event_size) {
+	//p_event_data is a pointer to the event data
+
+	//call our callback
 }

@@ -1,30 +1,30 @@
 /**
  * Copyright (c) 2014 - 2018, Nordic Semiconductor ASA
- *
+ * 
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form, except as embedded into a Nordic
  *    Semiconductor ASA integrated circuit in a product or a software update for
  *    such product, must reproduce the above copyright notice, this list of
  *    conditions and the following disclaimer in the documentation and/or other
  *    materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
- *
+ * 
  * 4. This software, with or without modification, must only be used with a
  *    Nordic Semiconductor ASA integrated circuit.
- *
+ * 
  * 5. Any software provided in binary form under this license must not be reverse
  *    engineered, decompiled, modified and/or disassembled.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -35,7 +35,7 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  */
 /** @file
  *
@@ -81,14 +81,10 @@
 #include "nrfx_timer.h"
 
 #include "nrf_log.h"
-#include "nrf_delay.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "ble_cus.h"
 #include "mpu9250.h"
-
-#include "smartwatch_ble_service_manager.h"
-
-#include "display.h"
 
 
 #define BUCKLER_SENSORS_SCL     NRF_GPIO_PIN_MAP(0,19)
@@ -114,7 +110,7 @@
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000)                  /**< Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3                                       /**< Number of attempts before giving up the connection parameter negotiation. */
 
-#define NOTIFICATION_INTERVAL           APP_TIMER_TICKS(1000)
+#define NOTIFICATION_INTERVAL           APP_TIMER_TICKS(1000)     
 
 #define SEC_PARAM_BOND                  1                                       /**< Perform bonding. */
 #define SEC_PARAM_MITM                  0                                       /**< Man In The Middle protection not required. */
@@ -128,15 +124,17 @@
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 
-
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
-
+BLE_CUS_DEF(m_cus);
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 APP_TIMER_DEF(m_notification_timer_id);
 
-static uint32_t m_custom_value = 4000000;
+// I2C manager
+NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
+
+static uint8_t m_custom_value = 0;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -149,6 +147,7 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 //{
 //    {CUSTOM_SERVICE_UUID, BLE_UUID_TYPE_VENDOR_BEGIN }
 //};
+
 
 static void advertising_start(bool erase_bonds);
 
@@ -168,6 +167,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
+
 
 /**@brief Function for handling Peer Manager events.
  *
@@ -277,33 +277,35 @@ static void notification_timeout_handler(void * p_context)
 {
     UNUSED_PARAMETER(p_context);
     ret_code_t err_code;
-
+    
     // Increment the value of m_custom_value before nortifing it.
     m_custom_value++;
-    NRF_LOG_INFO("timer handler %d", m_custom_value);
-    for (int i= 0; i < 5; i += 1) {
-        // if (m_custom_value % (i+1) == 0) {
-        err_code = smartwatch_ble_service_set_char_value(custom_services[i], m_custom_value);
-        APP_ERROR_CHECK(err_code);
-        nrf_delay_ms(10);
-    }
-        // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
-        // APP_ERROR_CHECK(err_code);
+    
+    err_code = ble_cus_custom_value_update(&m_cus, m_custom_value);
+    APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for the Timer initialization.
  *
  * @details Initializes the timer module. This creates and starts application timers.
  */
-static void ble_timers_init(void)
+static void timers_init(void)
 {
     // Initialize timer module.
-    ret_code_t err_code;
-
-    // Create timers.
-    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
+    ret_code_t err_code = app_timer_init();
     APP_ERROR_CHECK(err_code);
 
+    // Create timers.
+    err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler);
+    APP_ERROR_CHECK(err_code);
+
+    /* YOUR_JOB: Create any timers to be used by the application.
+                 Below is an example of how to create a timer.
+                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
+                 one.
+       ret_code_t err_code;
+       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
+       APP_ERROR_CHECK(err_code); */
 }
 
 
@@ -325,8 +327,9 @@ static void gap_params_init(void)
                                           strlen(DEVICE_NAME));
     APP_ERROR_CHECK(err_code);
 
-    err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_WATCH_SPORTS_WATCH);
-    APP_ERROR_CHECK(err_code);
+    /* YOUR_JOB: Use an appearance value matching the application's use case.
+       err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_);
+       APP_ERROR_CHECK(err_code); */
 
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
@@ -396,46 +399,83 @@ static void on_yys_evt(ble_yy_service_t     * p_yy_service,
  * @param[in]   p_evt          Event received from the Custom Service.
  *
  */
-// static void on_cus_evt(ble_cus_t     * p_cus_service,
-//                        ble_cus_evt_t * p_evt)
-// {
-//     ret_code_t err_code;
+static void on_cus_evt(ble_cus_t     * p_cus_service,
+                       ble_cus_evt_t * p_evt)
+{
+    ret_code_t err_code;
+    
+    switch(p_evt->evt_type)
+    {
+        case BLE_CUS_EVT_NOTIFICATION_ENABLED:
+            
+             err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
+             APP_ERROR_CHECK(err_code);
+             break;
 
-//     switch(p_evt->evt_type)
-//     {
-//         case BLE_CUS_EVT_NOTIFICATION_ENABLED:
+        case BLE_CUS_EVT_NOTIFICATION_DISABLED:
 
-//              err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
-//              APP_ERROR_CHECK(err_code);
-//              break;
+            err_code = app_timer_stop(m_notification_timer_id);
+            APP_ERROR_CHECK(err_code);
+            break;
 
-//         case BLE_CUS_EVT_NOTIFICATION_DISABLED:
+        case BLE_CUS_EVT_CONNECTED:
+            break;
 
-//             err_code = app_timer_stop(m_notification_timer_id);
-//             APP_ERROR_CHECK(err_code);
-//             break;
+        case BLE_CUS_EVT_DISCONNECTED:
+              break;
 
-//         case BLE_CUS_EVT_CONNECTED:
-//             break;
+        default:
+              // No implementation needed.
+              break;
+    }
+}
 
-//         case BLE_CUS_EVT_DISCONNECTED:
-//               break;
+/**@brief Function for initializing services that will be used by the application.
+ */
+static void services_init(void)
+{
+        ret_code_t          err_code;
+        nrf_ble_qwr_init_t  qwr_init = {0};
+        ble_cus_init_t      cus_init = {0};
 
-//         default:
-//               // No implementation needed.
-//               break;
-//     }
-// }
+        // Initialize Queued Write Module.
+        qwr_init.error_handler = nrf_qwr_error_handler;
 
-static void qwr_init(void) {
-    ret_code_t          err_code;
-    nrf_ble_qwr_init_t  qwr_init = {0};
+        err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
+        APP_ERROR_CHECK(err_code);
 
-    // Initialize Queued Write Module.
-    qwr_init.error_handler = nrf_qwr_error_handler;
+         // Initialize CUS Service init structure to zero.
+        cus_init.evt_handler                = on_cus_evt;
+    
+        BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.cccd_write_perm);
+        BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.read_perm);
+        BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cus_init.custom_value_char_attr_md.write_perm);
+    
+        err_code = ble_cus_init(&m_cus, &cus_init);
+        APP_ERROR_CHECK(err_code);
+                
+    /* YOUR_JOB: Add code to initialize the services used by the application.
+       ble_xxs_init_t                     xxs_init;
+       ble_yys_init_t                     yys_init;
 
-    err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
-    APP_ERROR_CHECK(err_code);
+       // Initialize XXX Service.
+       memset(&xxs_init, 0, sizeof(xxs_init));
+
+       xxs_init.evt_handler                = NULL;
+       xxs_init.is_xxx_notify_supported    = true;
+       xxs_init.ble_xx_initial_value.level = 100;
+
+       err_code = ble_bas_init(&m_xxs, &xxs_init);
+       APP_ERROR_CHECK(err_code);
+
+       // Initialize YYY Service.
+       memset(&yys_init, 0, sizeof(yys_init));
+       yys_init.evt_handler                  = on_yys_evt;
+       yys_init.ble_yy_initial_value.counter = 0;
+
+       err_code = ble_yy_service_init(&yys_init, &yy_init);
+       APP_ERROR_CHECK(err_code);
+     */
 }
 
 
@@ -498,15 +538,11 @@ static void conn_params_init(void)
  */
 static void application_timers_start(void)
 {
-    ret_code_t err_code;
-    err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
-    APP_ERROR_CHECK(err_code);
     /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
        ret_code_t err_code;
        err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-       APP_ERROR_CHECK(err_code); 
+       APP_ERROR_CHECK(err_code); */
 
-       TODO: change to FreeRTOS*/
 }
 
 
@@ -547,7 +583,6 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             NRF_LOG_INFO("Fast advertising.");
             err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
             APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("ADVERTISIG");
             break;
 
         case BLE_ADV_EVT_IDLE:
@@ -735,7 +770,6 @@ static void bsp_event_handler(bsp_event_t event)
 
 /**@brief Function for initializing the Advertising functionality.
  */
-// This can be untouched
 static void advertising_init(void)
 {
     ret_code_t             err_code;
@@ -743,26 +777,9 @@ static void advertising_init(void)
 
     memset(&init, 0, sizeof(init));
 
-    uint8_t adv_manuf_data[10] = {0};
-    uint8_array_t adv_manuf_data_array;
-    adv_manuf_data[0] = 0x23;
-    for (int i = 1; i < 10; i += 1) {
-        adv_manuf_data[i] = i;
-    }
-    adv_manuf_data_array.p_data = adv_manuf_data;
-    adv_manuf_data_array.size   = 10;
-
-
-    ble_advdata_manuf_data_t adv_payload;
-    adv_payload.company_identifier = 0xE713;
-    adv_payload.data = adv_manuf_data_array;
-
-        // UNUSED_PARAMETER(adv_payload);
-
     init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     init.advdata.include_appearance      = false;
     init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    init.advdata.p_manuf_specific_data   = &adv_payload;
     //init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     //init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
@@ -788,8 +805,6 @@ static void buttons_leds_init(bool * p_erase_bonds)
     ret_code_t err_code;
     bsp_event_t startup_event;
 
-    printf("%d", BSP_INIT_LEDS);
-
     err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
     APP_ERROR_CHECK(err_code);
 
@@ -797,6 +812,17 @@ static void buttons_leds_init(bool * p_erase_bonds)
     APP_ERROR_CHECK(err_code);
 
     *p_erase_bonds = (startup_event == BSP_EVENT_CLEAR_BONDING_DATA);
+}
+
+
+/**@brief Function for initializing the nrf log module.
+ */
+static void log_init(void)
+{
+    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
 }
 
 
@@ -841,18 +867,23 @@ static void advertising_start(bool erase_bonds)
 }
 
 
-/* initialize everything BLE . */
-static void smartwatch_ble_init(void) {
-	bool erase_bonds;
+/**@brief Function for application main entry.
+ */
+int main(void)
+{
+    bool erase_bonds;
 
-    ble_timers_init();
-    // buttons_leds_init(&erase_bonds);
+    // Initialize.
+    log_init();
+    printf("Log started!\n");
+
+    timers_init();
+    buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
     gap_params_init();
     gatt_init();
     advertising_init();
-    qwr_init();
     services_init();
     conn_params_init();
     peer_manager_init();
@@ -864,17 +895,25 @@ static void smartwatch_ble_init(void) {
     advertising_start(erase_bonds);
 
     printf("Started!\n");
-}
+
+    // initialize i2c master (two wire interface)
+    nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
+    i2c_config.scl = BUCKLER_SENSORS_SCL;
+    i2c_config.sda = BUCKLER_SENSORS_SDA;
+    i2c_config.frequency = NRF_TWIM_FREQ_100K;
+    ret_code_t error_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
+    APP_ERROR_CHECK(error_code);
+
+    // initialize MPU-9250 driver
+    mpu9250_init(&twi_mngr_instance);
+    printf("MPU-9250 initialized\n");
 
 
-/**@brief Function for application main entry.
- */
-void smartwatch_ble_main(void)
-{
-	smartwatch_ble_init();
-
-	/* display test */
-	display_write("BLE initialized", DISPLAY_LINE_0);
+    // Enter main loop.
+    for (;;)
+    {
+        idle_state_handle();
+    }
 }
 
 

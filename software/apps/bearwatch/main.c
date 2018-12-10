@@ -61,6 +61,7 @@
 
 #include "sdk_errors.h"
 #include "app_error.h"
+#include "app_scheduler.h"
 #include "nrf.h"
 #include "nrf_delay.h"
 #include "nrf_drv_clock.h"
@@ -80,6 +81,10 @@
 #include "smartwatch_ble_main.h"
 #include "sensors.h"
 
+// scheduler settings
+#define SCHED_MAX_EVENT_DATA_SIZE 					APP_TIMER_SCHED_EVENT_DATA_SIZE //just a rnadom nubmer for now
+#define SCHED_QUEUE_SIZE 							10 // also just a random number for now
+
 
 // LED array
 static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
@@ -98,6 +103,13 @@ static void log_init(ret_code_t error_code)
     printf("Log initialized\n");
 }
 
+/**@brief Function for initializing power management.
+ */
+static void power_management_init(ret_code_t error_code)
+{
+    error_code = nrf_pwr_mgmt_init();
+    APP_ERROR_CHECK(error_code);
+}
 
 /* Initialize the display.
  */
@@ -155,12 +167,29 @@ static void gpio_init(ret_code_t error_code) {
     return;
 }
 
+
+/**@brief Function for handling the idle state (main loop).
+ *
+ * @details If there is no pending log operation, then sleep until next the next event occurs.
+ */
+static void idle_state_handle(void)
+{
+    if (NRF_LOG_PROCESS() == false)
+    {
+        nrf_pwr_mgmt_run();
+    }
+}
+
+
 int main(void)
 {
     ret_code_t err_code = NRF_SUCCESS;
 
     /* initialize nrf log module */
     log_init(err_code);
+
+    // initialize power management
+    power_management_init(err_code);
 
     /* Initialize the display. */
     smartwatch_display_init(err_code);
@@ -171,23 +200,21 @@ int main(void)
     // initialize GPIO
     gpio_init(err_code);
 
+    //initialize the nrf scheduler
+    APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+
 
     display_write("Welcome to", DISPLAY_LINE_0);
     display_write("BearWatch", DISPLAY_LINE_1);
 
-
-    // printf("sensors\n");
-    // sensors_init();
-    // printf("sensors done\n");
-
-
+    sensors_init();
     smartwatch_ble_main();
     accelerometer_main();
 
     while (true)
     {
-        /* FreeRTOS should not be here... FreeRTOS goes back to the start of stack
-         * in vTaskStartScheduler function. */
+       app_sched_execute();
+       idle_state_handle();
     }
 }
 
