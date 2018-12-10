@@ -124,14 +124,6 @@ void si7021_read_RH_hold (float* hum) {
     NRF_TWI_MNGR_READ(SI7021_ADDR, temp_hum_data, 3, 0),
   };
   int error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, read_rh_hold_transfer, 2, NULL);
-  if (error != NRF_SUCCESS) {
-    return;
-  }
-  if (error == NRF_ERROR_BUSY) {
-    printf("busy");
-  } else if (error != NRF_SUCCESS) {
-    printf("error %x\n", error);
-  }
   APP_ERROR_CHECK(error);
 
   *hum = -6.0 + ((125.0 / (1 << 16)) * (((uint32_t) temp_hum_data[0] << 8) | ((uint32_t) temp_hum_data[1] & 0xf0)));
