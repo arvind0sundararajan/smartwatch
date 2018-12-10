@@ -53,12 +53,12 @@ void sensors_init(void)
 }
 
 /* Reads temperature off si7021 in Celsius */
-float read_temperature(void)
+int read_temperature(float* temperature)
 {
-
-  float si_temperature, humidity;
-  si7021_read_temp_and_RH(&si_temperature, &humidity);
-  return si_temperature;
+  ret_code_t err_code;
+  float humidity;
+  err_code = si7021_read_temp_and_RH(temperature, &humidity);
+  return err_code;
 
 }
 

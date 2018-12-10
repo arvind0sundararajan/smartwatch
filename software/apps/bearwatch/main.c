@@ -176,9 +176,9 @@ int main(void)
     display_write("BearWatch", DISPLAY_LINE_1);
 
 
-    printf("sensors\n");
-    sensors_init();
-    printf("sensors done\n");
+    // printf("sensors\n");
+    // sensors_init();
+    // printf("sensors done\n");
 
 
     smartwatch_ble_main();

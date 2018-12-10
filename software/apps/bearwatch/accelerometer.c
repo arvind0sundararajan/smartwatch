@@ -26,6 +26,7 @@
 #include "display.h"
 
 #include "smartwatch_ble_service_manager.h"
+#include "sensors.h"
 
 /* Single shot timer used for interval after footstep */
 APP_TIMER_DEF(footstep_timer);
@@ -126,9 +127,12 @@ uint32_t cum_sum = 0;
 uint32_t avg_sum = 0;
 uint32_t sample_old = 0;
 uint32_t sample_new = 0;
-uint32_t precision = 100;
+uint32_t precision = 50;
+
+uint32_t max_min_difference = 0;
 
 static void accelerometer_callback(void * p_context) {
+  uint32_t err_code;
   //Low pass filter, averaging the inputs
   for(int i = 0; i < 4; i++){
     // sample analog inputs
@@ -147,11 +151,10 @@ static void accelerometer_callback(void * p_context) {
   }
   /* If the newly registered sample is greater than the footstep threshold and less then old sample,
   i.e, negative slope in acceleration graph */
-  if(sample_new > footstep_threshold && sample_new < sample_old && !was_footstep){
+  if(sample_new > footstep_threshold && max_min_difference > 100 && sample_new < sample_old && !was_footstep){
     no_of_footsteps++; //increment number of footsteps
     was_footstep = true;
-    uint32_t err_code;
-    err_code = app_timer_start(footstep_timer, APP_TIMER_TICKS(200), NULL);
+    err_code = app_timer_start(footstep_timer, APP_TIMER_TICKS(500), NULL);
     APP_ERROR_CHECK(err_code);
   }
 
@@ -162,9 +165,12 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 
-  // printf("no_of_footsteps: %d\n", no_of_footsteps);
-
-  smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+  printf("no_of_footsteps: %d\n", no_of_footsteps);
+  if (no_of_footsteps > 25) {
+    smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+  } else if (no_of_footsteps % 5 == 0) {
+    smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+  }
 
   // printf("max: %ld\n", max);
   // printf("min: %ld\n", min);
@@ -172,7 +178,7 @@ static void accelerometer_callback(void * p_context) {
   // printf("sample old: %ld\n", sample_old);
   // printf("footstep footstep_threshold: %ld\n", footstep_threshold);
 
-  nrf_delay_ms(10);
+  // nrf_delay_ms(10);
   print_counter = 0;
   if(max_min_update_counter > 50){
     if(sample_new > max){
@@ -184,8 +190,30 @@ static void accelerometer_callback(void * p_context) {
       min = sample_new;
       footstep_threshold = (max + min)/2;
     }
+    max_min_difference = max - min;
+
     max_min_update_counter = 0;
+    // smartwatch_ble_service_set_char_value(&footstep_service, footstep_threshold);
   }
+
+  /** ensors */
+  // float temp;
+  // err_code = read_temperature(&temp);
+  // if (err_code == NRF_SUCCESS) {
+  //   printf("%f", temp);
+  //   // err_code = smartwatch_ble_service_set_char_value(&temperature_service, t);
+  // // APP_ERROR_CHECK(err_code); 
+  // }
+  // float humidity = read_humidity();
+  // float pres = read_pressure();
+
+  // uint32_t t, h, p;
+  // memcpy(&t, &temp, sizeof(t));
+  // memcpy(&h, &humidity, sizeof(h));
+  // memcpy(&p, &pres, sizeof(pres));
+
+  // err_code = smartwatch_ble_service_set_char_value(&temperature_service, t);
+  // APP_ERROR_CHECK(err_code);
 }
 
 APP_TIMER_DEF(m_accelerometer_timer_id);
@@ -198,7 +226,7 @@ void accelerometer_main (void) {
   err_code = app_timer_create(&m_accelerometer_timer_id, APP_TIMER_MODE_REPEATED, accelerometer_callback);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(500), NULL);
+  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
 }

@@ -21,8 +21,8 @@ void si7021_read_temp_hold(float* temp);
 //void si7021_read_temp(float* temp);
 void si7021_read_RH_hold(float* hum);
 //void si7021_read_RH(float* hum);
-void si7021_read_temp_after_RH(float* temp);
-void si7021_read_temp_and_RH(float* temp, float* hum);
+int si7021_read_temp_after_RH(float* temp);
+int si7021_read_temp_and_RH(float* temp, float* hum);
 //
 void si7021_read_user_reg(uint8_t* user_reg);
 //void si7021_read_firmware_rev(uint8_t* buf);
