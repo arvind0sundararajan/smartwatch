@@ -81,6 +81,7 @@
 #include "nrfx_timer.h"
 
 #include "nrf_log.h"
+#include "nrf_delay.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "mpu9250.h"
@@ -281,10 +282,10 @@ static void notification_timeout_handler(void * p_context)
     m_custom_value++;
     NRF_LOG_INFO("timer handler %d", m_custom_value);
     for (int i= 0; i < 5; i += 1) {
-        if (m_custom_value % (i+1) == 0) {
-            err_code = smartwatch_ble_service_set_char_value(custom_services[i], m_custom_value);
-            APP_ERROR_CHECK(err_code);
-        }
+        // if (m_custom_value % (i+1) == 0) {
+        err_code = smartwatch_ble_service_set_char_value(custom_services[i], m_custom_value);
+        APP_ERROR_CHECK(err_code);
+        nrf_delay_ms(10);
     }
         // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
         // APP_ERROR_CHECK(err_code);
@@ -303,7 +304,6 @@ static void ble_timers_init(void)
     err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
     APP_ERROR_CHECK(err_code);
 
-     /* TODO: change to FreeRTOS timers*/
 }
 
 
@@ -858,7 +858,7 @@ static void smartwatch_ble_init(void) {
 
     // Start execution.
     NRF_LOG_INFO("Template example started.");
-    application_timers_start();
+    // application_timers_start();
 
     advertising_start(erase_bonds);
 
