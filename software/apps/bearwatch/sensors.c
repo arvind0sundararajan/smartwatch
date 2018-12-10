@@ -71,7 +71,6 @@ float read_temperature(void)
 {
   ret_code_t err_code;
   float temperature, humidity;
-  si7021_read_temp_and_RH(&temperature, &humidity);
   return temperature;
 
 }
