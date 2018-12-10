@@ -46,7 +46,39 @@
 #ifdef USE_APP_CONFIG
 #include "app_config.h"
 #endif
-// <h> Board Support
+
+// #include "board.h"
+
+// // <h> Board Support
+
+
+#define NRFX_SPIM_ENABLED 1
+#define NRFX_SPIM1_ENABLED 1
+#define NRFX_SPI_ENABLED 1
+#define NRFX_SPI1_ENABLED 1
+#define SPI_ENABLED 1
+#define SPI1_ENABLED 1
+
+#define NRFX_TWIM_ENABLED 1
+#define NRFX_TWI_ENABLED 1
+#define TWI_ENABLED 1
+#define TWI0_ENABLED 1
+#define TWI0_USE_EASY_DMA 1
+#define NRF_TWI_MNGR_ENABLED 1
+
+
+#define NRFX_PWM_ENABLED 1
+#define NRFX_PWM0_ENABLED 1
+#define NRFX_PWM1_ENABLED 1
+#define NRFX_PWM2_ENABLED 1
+#define PWM_ENABLED 1
+#define PWM0_ENABLED 1
+#define PWM1_ENABLED 1
+#define PWM2_ENABLED 1
+#define APP_PWM_ENABLED 1
+#define LOW_POWER_PWM_ENABLED 1
+#define NRFX_PPI_ENABLED 1
+#define PPI_ENABLED 1 
 
 //==========================================================
 // <q> BSP_BTN_BLE_ENABLED  - bsp_btn_ble - Button Control for BLE
@@ -3889,7 +3921,7 @@
 // <7=> 7
 
 #ifndef NRFX_TWIM_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_TWIM_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define NRFX_TWIM_DEFAULT_CONFIG_IRQ_PRIORITY 3
 #endif
 
 // <e> NRFX_TWIM_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -4037,7 +4069,7 @@
 // <7=> 7
 
 #ifndef NRFX_TWIS_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_TWIS_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define NRFX_TWIS_DEFAULT_CONFIG_IRQ_PRIORITY 0
 #endif
 
 // <e> NRFX_TWIS_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -4141,7 +4173,7 @@
 // <7=> 7
 
 #ifndef NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY 3
 #endif
 
 // <e> NRFX_TWI_CONFIG_LOG_ENABLED - Enables logging in the module.
@@ -5532,7 +5564,7 @@
 // <7=> 7
 
 #ifndef TWIS_DEFAULT_CONFIG_IRQ_PRIORITY
-#define TWIS_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define TWIS_DEFAULT_CONFIG_IRQ_PRIORITY 6
 #endif
 
 // </e>
@@ -5580,7 +5612,7 @@
 // <7=> 7
 
 #ifndef TWI_DEFAULT_CONFIG_IRQ_PRIORITY
-#define TWI_DEFAULT_CONFIG_IRQ_PRIORITY 7
+#define TWI_DEFAULT_CONFIG_IRQ_PRIORITY 3
 #endif
 
 // <e> TWI0_ENABLED - Enable TWI0 instance
@@ -5818,7 +5850,7 @@
 
 
 #ifndef NRF_TWI_SENSOR_ENABLED
-#define NRF_TWI_SENSOR_ENABLED 0
+#define NRF_TWI_SENSOR_ENABLED 1
 #endif
 
 // </h>
@@ -12161,6 +12193,10 @@
 
 // </h>
 //==========================================================
+
+/* copy pasta */
+// application-specific configuration
+// augments the base configuration in sdk/<SDK>/config/<IC>/config/sdk_config.h
 
 // <<< end of configuration section >>>
 #endif //SDK_CONFIG_H

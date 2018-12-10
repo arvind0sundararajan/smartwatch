@@ -5,7 +5,7 @@
 void sensors_init(void);
 
 /* Read temperature */
-int read_temperature(float* temperature);
+float read_temperature(void);
 
 /* Read humidity */
 float read_humidity(void);

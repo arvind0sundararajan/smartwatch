@@ -4,6 +4,17 @@ OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../../buckler/software/nrf5x-base/sdk/nrf5_sdk_15.0.0/
 
+
+# NRF_IC = nrf52832
+# SDK_VERSION = 15
+# SOFTDEVICE_MODEL = s132
+# NRF_BASE_DIR = ../../buckler/software/nrf5x-base/
+# include ../../buckler/software/boards/buckler_revB/Board.mk
+# include $(NRF_BASE_DIR)make/Configuration.mk
+# include $(NRF_BASE_DIR)make/Includes.mk
+# include $(NRF_BASE_DIR)make/Jtag.mk
+# include $(NRF_BASE_DIR)make/AppMakefile.mk
+
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 	LINKER_SCRIPT  := ble_app_template_gcc_nrf52.ld
 
