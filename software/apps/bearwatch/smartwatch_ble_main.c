@@ -75,7 +75,6 @@
 #include "ble_conn_state.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
-#include "nrf_pwr_mgmt.h"
 #include "nrf_twi_mngr.h"
 #include "nrf_drv_twi.h"
 #include "nrfx_timer.h"
@@ -134,9 +133,6 @@ NRF_BLE_QWR_DEF(m_qwr);                                                         
 
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
-APP_TIMER_DEF(m_notification_timer_id);
-
-static uint32_t m_custom_value = 4000000;
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
@@ -264,48 +260,6 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
             break;
     }
 }
-
-
-/**@brief Function for handling the Battery measurement timer timeout.
- *
- * @details This function will be called each time the battery level measurement timer expires.
- *
- * @param[in] p_context  Pointer used for passing some arbitrary information (context) from the
- *                       app_start_timer() call to the timeout handler.
- */
-static void notification_timeout_handler(void * p_context)
-{
-    // UNUSED_PARAMETER(p_context);
-    // ret_code_t err_code;
-
-    // // Increment the value of m_custom_value before nortifing it.
-    // m_custom_value++;
-    // NRF_LOG_INFO("timer handler %d", m_custom_value);
-    // for (int i= 0; i < 5; i += 1) {
-    //     // if (m_custom_value % (i+1) == 0) {
-    //     err_code = smartwatch_ble_service_set_char_value(custom_services[i], m_custom_value);
-    //     APP_ERROR_CHECK(err_code);
-    //     nrf_delay_ms(10);
-    // }
-        // err_code = smartwatch_ble_service_set_char_value(&test_service_2, m_custom_value*2);
-        // APP_ERROR_CHECK(err_code);
-}
-
-/**@brief Function for the Timer initialization.
- *
- * @details Initializes the timer module. This creates and starts application timers.
- */
-static void ble_timers_init(void)
-{
-    // Initialize timer module.
-    // ret_code_t err_code;
-
-    // // Create timers.
-    // err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
-    // APP_ERROR_CHECK(err_code);
-
-}
-
 
 /**@brief Function for the GAP initialization.
  *
@@ -491,22 +445,6 @@ static void conn_params_init(void)
 
     err_code = ble_conn_params_init(&cp_init);
     APP_ERROR_CHECK(err_code);
-}
-
-
-/**@brief Function for starting timers.
- */
-static void application_timers_start(void)
-{
-    // ret_code_t err_code;
-    // err_code = app_timer_start(m_notification_timer_id, NOTIFICATION_INTERVAL, NULL);
-    // APP_ERROR_CHECK(err_code);
-    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
-       ret_code_t err_code;
-       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-       APP_ERROR_CHECK(err_code); 
-
-       TODO: change to FreeRTOS*/
 }
 
 
@@ -799,28 +737,6 @@ static void buttons_leds_init(bool * p_erase_bonds)
 }
 
 
-/**@brief Function for initializing power management.
- */
-static void power_management_init(void)
-{
-    ret_code_t err_code;
-    err_code = nrf_pwr_mgmt_init();
-    APP_ERROR_CHECK(err_code);
-}
-
-
-/**@brief Function for handling the idle state (main loop).
- *
- * @details If there is no pending log operation, then sleep until next the next event occurs.
- */
-static void idle_state_handle(void)
-{
-    if (NRF_LOG_PROCESS() == false)
-    {
-        nrf_pwr_mgmt_run();
-    }
-}
-
 
 /**@brief Function for starting advertising.
  */
@@ -844,7 +760,6 @@ static void advertising_start(bool erase_bonds)
 static void smartwatch_ble_init(void) {
 	bool erase_bonds;
 
-    ble_timers_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();

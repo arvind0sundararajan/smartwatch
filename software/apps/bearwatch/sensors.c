@@ -16,6 +16,7 @@
 #include "mpu9250.h"
 
 #include "app_timer.h"
+#include "app_scheduler.h"
 #include "nrf_gpio.h"
 
 /* TODO; move to init function */
@@ -149,4 +150,10 @@ static void sensor_callback(void * p_context) {
   // memcpy(&t, &temp, sizeof(t));
 
   // smartwatch_ble_service_set_char_value(&temperature_service, t);
+}
+
+void sensor_scheduler_event_handler(void *p_event_data, uint16_t event_size) {
+	//p_event_data is a pointer to the event data
+
+	//call our callback
 }
