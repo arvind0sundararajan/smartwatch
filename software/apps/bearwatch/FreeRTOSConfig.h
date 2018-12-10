@@ -77,6 +77,11 @@
 #define configUSE_NEWLIB_REENTRANT                                                0
 #define configENABLE_BACKWARD_COMPATIBILITY                                       1
 
+/* Memory allocation related definitions */
+#define configSUPPORT_STATIC_ALLOCATION												0
+#define configSUPPORT_DYNAMIC_ALLOCATION											1
+
+
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK                                                       0
 #define configUSE_TICK_HOOK                                                       0
@@ -94,7 +99,7 @@
 
 /* Software timer definitions. */
 #define configUSE_TIMERS                                                          1
-#define configTIMER_TASK_PRIORITY                                                 ( 2 )
+#define configTIMER_TASK_PRIORITY                                                 ( 0 )
 #define configTIMER_QUEUE_LENGTH                                                  32
 #define configTIMER_TASK_STACK_DEPTH                                              ( 80 )
 
@@ -132,13 +137,13 @@
 
 /* The lowest interrupt priority that can be used in a call to a "set priority"
 function. */
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0xf
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0x7
 
 /* The highest interrupt priority that can be used by any interrupt service
 routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
 INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
 PRIORITY THAN THIS! (higher priorities are lower numeric values. */
-#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    _PRIO_APP_HIGH
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    0x5
 
 
 /* Interrupt priorities used by the kernel port layer itself.  These are generic

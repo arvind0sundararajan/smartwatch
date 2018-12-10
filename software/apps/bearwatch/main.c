@@ -88,7 +88,8 @@ static uint8_t LEDS[3] = {BUCKLER_LED0, BUCKLER_LED1, BUCKLER_LED2};
 #define TIMER_PERIOD      1000          /**< Timer period. timer will expire after 1000 ms */
 
 TaskHandle_t  led_toggle_task_handle;   /**< Reference to LED0 toggling FreeRTOS task. */
-TimerHandle_t led_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS timer. */
+TimerHandle_t led1_toggle_timer_handle;  /**< Reference to LED1 toggling FreeRTOS timer. */
+TimerHandle_t led2_toggle_timer_handle;  /**< Reference to LED2 toggling FreeRTOS timer. */
 
 /* INIT FUNCTIONS */
 
@@ -164,7 +165,7 @@ static void gpio_init(ret_code_t error_code) {
  *
  * @param[in] pvParameter   Pointer that will be used as the parameter for the task.
  */
-static void led_toggle_task_function (void * pvParameter) {
+void led_toggle_task_function (void * pvParameter) {
     UNUSED_PARAMETER(pvParameter);
     while(true) {
         nrf_gpio_pin_toggle(LEDS[0]);
@@ -179,10 +180,20 @@ static void led_toggle_task_function (void * pvParameter) {
  *
  * @param[in] pvParameter   Pointer that will be used as the parameter for the timer.
  */
-static void led_toggle_timer_callback (void * pvParameter)
+void led1_toggle_timer_callback (void * pvParameter)
 {
     UNUSED_PARAMETER(pvParameter);
     nrf_gpio_pin_toggle(LEDS[1]);
+}
+
+/**@brief The function to call when the LED FreeRTOS timer expires.
+ *
+ * @param[in] pvParameter   Pointer that will be used as the parameter for the timer.
+ */
+void led2_toggle_timer_callback (void * pvParameter)
+{
+    UNUSED_PARAMETER(pvParameter);
+    nrf_gpio_pin_toggle(LEDS[2]);
 }
 
 int main(void)
@@ -203,17 +214,21 @@ int main(void)
 
     display_write("BearWatch", DISPLAY_LINE_0);
     
-    printf("Initializing datetime\n");
+    //printf("Initializing datetime\n");
     datetime_main();
     //smartwatch_ble_main();
     //accelerometer_main();
 
-    /* Create task for LED blinking with priority set to 2 */
-    UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 2, &led_toggle_task_handle));
+    // /* Create task for LED blinking with priority set to 2 */
+    // UNUSED_VARIABLE(xTaskCreate(led_toggle_task_function, "LED0", configMINIMAL_STACK_SIZE + 200, NULL, 1, &led_toggle_task_handle));
 
-    /* Start timer for LED blinking */
-    led_toggle_timer_handle = xTimerCreate( "LED1", TIMER_PERIOD, pdFALSE, NULL, led_toggle_timer_callback);
-    UNUSED_VARIABLE(xTimerStart(led_toggle_timer_handle, 0));
+    // /* Start timer for LED blinking */
+    // led1_toggle_timer_handle = xTimerCreate( "LED1", TIMER_PERIOD, pdFALSE, NULL, led1_toggle_timer_callback);
+    // UNUSED_VARIABLE(xTimerStart(led1_toggle_timer_handle, 0));
+
+    //  /* Start timer for LED blinking */
+    // led2_toggle_timer_handle = xTimerCreate( "LED2", 2*TIMER_PERIOD, pdFALSE, NULL, led2_toggle_timer_callback);
+    // UNUSED_VARIABLE(xTimerStart(led2_toggle_timer_handle, 0));
 
     /* Activate deep sleep mode */
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
