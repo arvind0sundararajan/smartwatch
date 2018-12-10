@@ -39,7 +39,8 @@ void sensors_init(void)
   nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
   i2c_config.scl = BUCKLER_SENSORS_SCL;
   i2c_config.sda = BUCKLER_SENSORS_SDA;
-  i2c_config.frequency = NRF_TWIM_FREQ_400K;
+  i2c_config.frequency = NRF_TWIM_FREQ_100K;
+  i2c_config.interrupt_priority = APP_IRQ_PRIORITY_HIGHEST;
   err_code = nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
   APP_ERROR_CHECK(err_code);
 
@@ -138,7 +139,9 @@ static void sensor_callback(void * p_context) {
   nrf_gpio_pin_toggle(LEDS_SENSOR[0]);
   // printf("\tsensor coa\n");
   float temp = read_temperature();
+  float humidity = read_humidity();
   printf("\t%f\n", temp);
+  printf("\thumiidyt %f\n", humidity);
 
   // uint32_t t;
   // memcpy(&t, &temp, sizeof(t));
