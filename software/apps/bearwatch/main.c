@@ -83,7 +83,7 @@
 
 // scheduler settings
 #define SCHED_MAX_EVENT_DATA_SIZE 					APP_TIMER_SCHED_EVENT_DATA_SIZE //just a rnadom nubmer for now
-#define SCHED_QUEUE_SIZE 							10 // also just a random number for now
+#define SCHED_QUEUE_SIZE 							32 // also just a random number for now
 
 
 // LED array
@@ -207,14 +207,16 @@ int main(void)
     display_write("Welcome to", DISPLAY_LINE_0);
     display_write("BearWatch", DISPLAY_LINE_1);
 
+    nrf_delay_ms(1000);
+    display_write("", DISPLAY_LINE_0);
+    display_write("", DISPLAY_LINE_1);
 
     printf("sensors\n");
     sensors_init();
     printf("sensors done\n");
-
-
-    smartwatch_ble_main();
     accelerometer_main();
+    datetime_main();
+    //smartwatch_ble_main();
 
     while (true)
     {

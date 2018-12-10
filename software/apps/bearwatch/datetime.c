@@ -40,7 +40,7 @@ void update_time(void) {
 
 	char line_0_buffer[16];
 	strftime(line_0_buffer, 16, "%H:%M:%S", current_time_info);
-	sprintf(line_0_buffer, "Time: %02d:%02d:%02d\n", current_time_info->tm_hour, current_time_info->tm_min, current_time_info->tm_sec);
+	sprintf(line_0_buffer, "%02d:%02d:%02d\n", current_time_info->tm_hour, current_time_info->tm_min, current_time_info->tm_sec);
 	display_write(line_0_buffer, DISPLAY_LINE_0);
 }
 
