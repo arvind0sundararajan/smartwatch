@@ -303,7 +303,6 @@ static void ble_timers_init(void)
     err_code = app_timer_create(&m_notification_timer_id, APP_TIMER_MODE_REPEATED, notification_timeout_handler); // TODO: fIGURE THIS OUT?
     APP_ERROR_CHECK(err_code);
 
-     /* TODO: change to FreeRTOS timers*/
 }
 
 

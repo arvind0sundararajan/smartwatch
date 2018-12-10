@@ -6,8 +6,6 @@ extern struct tm *current_time_info; //datetime information struct
 
 /* increments the time by 1 s.*/
 void update_time(void);
-/* displays the time */
-void display_time(void);
 
 int datetime_main(void);
 
