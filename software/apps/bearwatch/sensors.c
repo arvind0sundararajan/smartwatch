@@ -66,12 +66,13 @@ void sensors_init(void)
 }
 
 /* Reads temperature off si7021 in Celsius */
-float read_temperature(void)
+void read_temperature(float* data)
 {
   ret_code_t err_code;
   float temperature, humidity;
   si7021_read_temp_and_RH(&temperature, &humidity);
-  return temperature;
+  data[0] = temperature;
+  data[1] = humidity;
 
 }
 
@@ -136,13 +137,15 @@ void get_rotation_gyro(float * arr)
 }
 
 static void sensor_callback(void * p_context) {
+  printf("sensor callback");
   nrf_gpio_pin_toggle(LEDS_SENSOR[0]);
+  printf("gpio done");
   // printf("\tsensor coa\n");
-  float temp = read_temperature();
-  float humidity = read_humidity();
+  float* data;
+  read_temperature(data);
   float presure = read_pressure();
-  printf("\t%d\n", (int)temp);
-  printf("\thumiidyt %d\n", (int)(humidity));
+  printf("\t%d\n", (int)data[0]);
+  printf("\thumiidyt %d\n", (int)(data[1]));
   printf("\tpressure %d\n", (int)presure);
 
   // uint32_t t;
