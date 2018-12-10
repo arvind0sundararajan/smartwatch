@@ -844,7 +844,7 @@ static void advertising_start(bool erase_bonds)
 static void smartwatch_ble_init(void) {
 	bool erase_bonds;
 
-    ble_timers_init();
+    // ble_timers_init();
     buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
@@ -858,7 +858,7 @@ static void smartwatch_ble_init(void) {
 
     // Start execution.
     NRF_LOG_INFO("Template example started.");
-    application_timers_start();
+    // application_timers_start();
 
     advertising_start(erase_bonds);
 

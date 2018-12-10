@@ -25,6 +25,8 @@
 #include "buckler.h"
 #include "display.h"
 
+#include "smartwatch_ble_service_manager.h"
+
 /* Single shot timer used for interval after footstep */
 APP_TIMER_DEF(footstep_timer);
 /* Footstep indicator */
@@ -160,15 +162,18 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 
-    printf("no_of_footsteps: %d\n", no_of_footsteps);
+  // printf("no_of_footsteps: %d\n", no_of_footsteps);
 
-    printf("max: %ld\n", max);
-    printf("min: %ld\n", min);
-    printf("sample new: %ld\n", sample_new);
-    printf("sample old: %ld\n", sample_old);
-    printf("footstep footstep_threshold: %ld\n", footstep_threshold);
-    nrf_delay_ms(10);
-    print_counter = 0;
+  smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+
+  // printf("max: %ld\n", max);
+  // printf("min: %ld\n", min);
+  // printf("sample new: %ld\n", sample_new);
+  // printf("sample old: %ld\n", sample_old);
+  // printf("footstep footstep_threshold: %ld\n", footstep_threshold);
+
+  nrf_delay_ms(10);
+  print_counter = 0;
   if(max_min_update_counter > 50){
     if(sample_new > max){
       max = sample_new;
@@ -193,28 +198,7 @@ void accelerometer_main (void) {
   err_code = app_timer_create(&m_accelerometer_timer_id, APP_TIMER_MODE_REPEATED, accelerometer_callback);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(100), NULL);
+  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(500), NULL);
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
-
-  /* CALIBRATION */
-  // for(int i = 0; i < 200; i++){
-  //   for(int j = 0; j < 4; j++){
-  //     nrf_saadc_value_t x_val = sample_value(X_CHANNEL);
-  //     nrf_saadc_value_t y_val = sample_value(Y_CHANNEL);
-  //     nrf_saadc_value_t z_val = sample_value(Z_CHANNEL);
-  //     uint32_t cumulative_val = sqrt(pow(x_val,2) + pow(y_val,2) + pow(z_val,2));
-  //     cum_sum+=cumulative_val;
-  //   }
-  //   avg_sum = cum_sum/4;
-  //   if(avg_sum > max){
-  //     max = avg_sum;
-  //   }
-  //   if(avg_sum < min){
-  //     min = avg_sum;
-  //   }
-  //   footstep_threshold = (max + min)/2;
-  //   cum_sum = 0;
-  //   avg_sum = 0;
-  // }
 }

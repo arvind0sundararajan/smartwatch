@@ -49,8 +49,10 @@ void si7021_init (const nrf_twi_mngr_t* instance) {
 void si7021_config (si7021_meas_res_t res_mode) {
   uint8_t res1, res0;
   uint8_t reg_status;
+  printf("read user reg\n");
   si7021_read_user_reg(&reg_status);
 
+  printf("res\n");
   res1 = (res_mode & 0x2) << 6;
   res0 = res_mode & 0x1;
 
@@ -133,7 +135,7 @@ void si7021_read_RH_hold (float* hum) {
 //
 //
 void si7021_read_temp_after_RH (float* temp) {
-  uint8_t command = Read_Temp_From_Prev_RH;
+uint8_t command = Read_Temp_From_Prev_RH;
   uint8_t temp_hum_data[3] = {0, 0, 0};
 
   nrf_twi_mngr_transfer_t const read_temp_after_rh[] = {
@@ -166,6 +168,7 @@ void si7021_read_user_reg (uint8_t* user_reg) {
   do {
     error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, read_user_reg_transfer, 2, NULL);
   } while (error != NRF_SUCCESS);
+  printf("finish reg user\n");
 }
 
 //
