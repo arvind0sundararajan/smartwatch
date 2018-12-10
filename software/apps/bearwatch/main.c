@@ -82,8 +82,8 @@
 #include "sensors.h"
 
 // scheduler settings
-#define SCHED_MAX_EVENT_DATA_SIZE 	8 //just a rnadom nubmer for now
-#define SCHED_QUEUE_SIZE 10 // also just a random number for now
+#define SCHED_MAX_EVENT_DATA_SIZE 					APP_TIMER_SCHED_EVENT_DATA_SIZE //just a rnadom nubmer for now
+#define SCHED_QUEUE_SIZE 							10 // also just a random number for now
 
 
 // LED array
