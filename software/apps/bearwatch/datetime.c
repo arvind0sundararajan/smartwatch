@@ -6,6 +6,7 @@ Module for datetime functions, updating time, setting alarms.
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "app_error.h"
 #include "app_timer.h"
@@ -32,6 +33,21 @@ static void datetime_init(void) {
 }
 
 
+// synchronizes the time over bluetooth
+void set_initial_datetime(uint8_t second, uint8_t minute, uint8_t hour) {
+	printf("setting initial datetime\n");
+	current_time_info->tm_hour = hour;
+	current_time_info->tm_min = minute;
+	current_time_info->tm_sec = second;	
+	mktime(current_time_info);
+
+	char line_0_buffer[16];
+	strftime(line_0_buffer, 16, "%H:%M:%S", current_time_info);
+	sprintf(line_0_buffer, "%02d:%02d:%02d\n", current_time_info->tm_hour, current_time_info->tm_min, current_time_info->tm_sec);
+	display_write(line_0_buffer, DISPLAY_LINE_0);
+}
+
+
 /* increments the time by 1 s.*/
 void update_time(void) {
 	printf("updating\n");
@@ -40,14 +56,15 @@ void update_time(void) {
 
 	char line_0_buffer[16];
 	strftime(line_0_buffer, 16, "%H:%M:%S", current_time_info);
-	sprintf(line_0_buffer, "Time: %02d:%02d:%02d\n", current_time_info->tm_hour, current_time_info->tm_min, current_time_info->tm_sec);
+	sprintf(line_0_buffer, "%02d:%02d:%02d\n", current_time_info->tm_hour, current_time_info->tm_min, current_time_info->tm_sec);
 	display_write(line_0_buffer, DISPLAY_LINE_0);
 }
 
 
-/* set an alarm in the future. */
-void set_alarm(uint8_t hour, uint8_t minute) {
-	
+// sound an alarm
+void sound_alarm(void) {
+	printf("Alarm went off.\n");
+	// TODO: fill
 }
 
 /**@brief The function to call when the datetime FreeRTOS timer expires.
@@ -58,6 +75,33 @@ static void datetime_update_timer_handler (void * p_context)
 {
     UNUSED_PARAMETER(p_context);
     update_time();
+}
+
+
+static void datetime_set_alarm_handler (void * p_context)
+{
+    UNUSED_PARAMETER(p_context);
+    sound_alarm();
+}
+
+
+/* set an alarm in the future. */
+void set_alarm(uint8_t hour, uint8_t minute) {
+	ret_code_t err_code;
+
+	// convert hour, minute to seconds
+	int seconds_until_alarm = 3600 * hour + 60 * minute;
+
+	// convert seconds to ticks
+	int num_ticks_until_alarm = APP_TIMER_TICKS(1000*seconds_until_alarm);
+
+	// create an app timer in the future
+	err_code = app_timer_create(&m_datetime_alarm_id, APP_TIMER_MODE_SINGLE_SHOT, datetime_set_alarm_handler);
+	APP_ERROR_CHECK(err_code);
+
+	//start the alarm
+	err_code = app_timer_start(m_datetime_alarm_id, num_ticks_until_alarm, NULL);
+	APP_ERROR_CHECK(err_code);
 }
 
 /* Initialize the datetime timer. */

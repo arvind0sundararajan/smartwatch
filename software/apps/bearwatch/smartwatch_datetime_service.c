@@ -40,10 +40,8 @@ void datetime_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
                 uint8_t second = *p_evt_write->data;
                 uint8_t minute = *(p_evt_write->data + 1);
                 uint8_t hour = *(p_evt_write->data + 2);
-                // set_initial_datetime(second,minute,hour);
-                //NRF_LOG_INFO("\t %dh%ds", hours, seconds);
-                //NRF_LOG_INFO("\t %dh%ds", hours, seconds);
-
+                set_initial_datetime(second,minute,hour);
+                NRF_LOG_INFO("\t %d:%d:%d", hour, minute, second);
             }
             break;
     }

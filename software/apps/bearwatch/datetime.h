@@ -6,6 +6,9 @@
 time_t *initial_time; //time_t object of current time (seconds past epoch)
 struct tm *current_time_info; //datetime information struct
 
+//set the initial value of the clock
+void set_initial_datetime(uint8_t second, uint8_t minute, uint8_t hour);
+
 // set an alarm in the future
 void set_alarm(uint8_t hour, uint8_t minute);
 
