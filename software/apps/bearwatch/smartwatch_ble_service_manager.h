@@ -12,6 +12,7 @@
 #include <ble_gatts.h>
 #include "ble_srv_common.h"
 
+#include "datetime.h"
 
 #include "smartwatch_ble_service.h"
 

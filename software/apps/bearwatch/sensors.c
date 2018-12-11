@@ -147,9 +147,9 @@ static void sensor_callback(void * p_context) {
   float* data;
   read_temperature(data);
   float pressure = read_pressure();
-  printf("\t%d\n", (int)data[0]);
-  printf("\thumiidyt %d\n", (int)(data[1]));
-  printf("\tpressure %d\n", (int)pressure);
+  // printf("\t%d\n", (int)data[0]);
+  // printf("\thumiidyt %d\n", (int)(data[1]));
+  // printf("\tpressure %d\n", (int)pressure);
 
   float temperature, humidity;
   temperature = data[0];

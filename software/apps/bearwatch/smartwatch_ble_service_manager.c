@@ -91,7 +91,6 @@ void services_init(void)
 }
 
 void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
-    printf("handler");
     switch(p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_DISCONNECTED:
             for (int i = 0; i < 5; i ++) {
