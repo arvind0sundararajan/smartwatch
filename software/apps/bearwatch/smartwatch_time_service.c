@@ -11,6 +11,10 @@
 // #include "boards.h"
 #include "nrf_log.h"
 
+uint8_t hour;
+uint8_t minute;
+uint8_t second;
+
 void time_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     // ret_code_t err_code = NRF_SUCCESS;
 
