@@ -77,11 +77,27 @@ void services_init(void)
         &humidity_service
     );
 
+    ble_service_params datetime_service_params = {
+        .base_service_uuid = 0x1600,
+        .evt_handler = datetime_service_evt_handler,
+        .uuid = {
+           { 0xEB, 0xDF, 0xB8, 0xB8, 0xAE, 0xA0, 0x8D, 0x79, 0x75, 0x5E, 0x46, 0x43, 0x33, 0x28, 0x1A, 0x18 }
+       }
+    };
+    smartwatch_ble_service_init(&datetime_service_params, &datetime_service);
+    NRF_SDH_BLE_OBSERVER(datetime_service_obs,
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        datetime_service_evt_handler,
+        &datetime_service
+    );
+
     custom_services[0] = &timer_service;
     custom_services[1] = &footstep_service;
     custom_services[2] = &pressure_service;
     custom_services[3] = &temperature_service;
     custom_services[4] = &humidity_service;
+    custom_services[5] = &datetime_service;
+
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
@@ -93,13 +109,13 @@ void services_init(void)
 void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     switch(p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_DISCONNECTED:
-            for (int i = 0; i < 5; i ++) {
+            for (int i = 0; i <  NUM_SERVICES; i ++) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = BLE_CONN_HANDLE_INVALID;
             }
             break;
         case BLE_GAP_EVT_CONNECTED:
-            for (int i = 0; i < 5; i ++) {
+            for (int i = 0; i < NUM_SERVICES;; i ++) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
                 uint32_t new_value = i + 0x11;
