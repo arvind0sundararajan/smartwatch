@@ -1,4 +1,4 @@
-#include "smartwatch_time_service.h"
+#include "smartwatch_datetime_service.h"
 // #include "sdk_common.h"
 // #include "ble_cus.h"
 #include <string.h>
@@ -11,13 +11,14 @@
 // #include "boards.h"
 #include "nrf_log.h"
 
-void time_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
+
+void datetime_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     // ret_code_t err_code = NRF_SUCCESS;
 
     smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-    if (service != &time_service) {
+    if (service != &datetime_service) {
         return;
     }
 
@@ -36,9 +37,10 @@ void time_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
         case BLE_GATTS_EVT_WRITE:
             if (p_evt_write->handle == service->char_handle.value_handle) {
                 NRF_LOG_INFO("Synchronization event FOR time service");
-                second = *p_evt_write->data;
-                hour = *(p_evt_write->data + 1);
-                minute = *(p_evt_write->data + 2);
+                uint8_t second = *p_evt_write->data;
+                uint8_t minute = *(p_evt_write->data + 1);
+                uint8_t hour = *(p_evt_write->data + 2);
+                set_initial_datetime(second,minute,hour);
                 //NRF_LOG_INFO("\t %dh%ds", hours, seconds);
                 //NRF_LOG_INFO("\t %dh%ds", hours, seconds);
 
