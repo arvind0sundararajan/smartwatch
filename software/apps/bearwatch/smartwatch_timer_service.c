@@ -10,6 +10,9 @@
 // #include "nrf_gpio.h"
 // #include "boards.h"
 #include "nrf_log.h"
+uint8_t hour = 0;
+uint8_t minute = 0;
+uint8_t second = 0;
 
 void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
