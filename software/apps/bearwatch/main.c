@@ -204,7 +204,7 @@ int main(void)
     //initialize the nrf scheduler
     APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 
-    printf("HELLO! \n");
+    //printf("HELLO! \n");
 
     display_write("Welcome to", DISPLAY_LINE_0);
     display_write("BearWatch", DISPLAY_LINE_1);

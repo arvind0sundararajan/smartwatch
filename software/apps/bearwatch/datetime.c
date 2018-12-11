@@ -1,4 +1,4 @@
-/* 
+/*
 Module for datetime functions, updating time, setting alarms.
 */
 
@@ -31,16 +31,16 @@ Initialize the tm object based on this time.
 static void datetime_init(void) {
 	time(initial_time);
 	current_time_info = localtime(initial_time);
-	printf("Datetime successfully initialized\n");
+	printf("Datetime Initialized\n");
 }
 
 
 // synchronizes the time over bluetooth
 void set_initial_datetime(uint8_t second, uint8_t minute, uint8_t hour) {
-	printf("setting initial datetime\n");
+	//printf("setting initial datetime\n");
 	current_time_info->tm_hour = hour;
 	current_time_info->tm_min = minute;
-	current_time_info->tm_sec = second;	
+	current_time_info->tm_sec = second;
 	mktime(current_time_info);
 
 	char line_0_buffer[16];
@@ -52,7 +52,7 @@ void set_initial_datetime(uint8_t second, uint8_t minute, uint8_t hour) {
 
 /* increments the time by 1 s.*/
 void update_time(void) {
-	printf("updating\n");
+	//printf("updating\n");
 	current_time_info->tm_sec += 1;
 	mktime(current_time_info);
 
@@ -65,7 +65,7 @@ void update_time(void) {
 
 // sound an alarm
 void sound_alarm(void) {
-	printf("Alarm went off.\n");
+	//printf("Alarm went off.\n");
 
 	nrf_gpio_pin_toggle(BUCKLER_LED1);
 	nrf_gpio_pin_toggle(BUCKLER_LED2);
@@ -120,7 +120,7 @@ static void datetime_timers_init(void) {
 static void datetime_timers_start(void) {
 	ret_code_t err_code;
 	err_code = app_timer_start(m_datetime_id, DATETIME_TIMER_PERIOD, NULL);
-	APP_ERROR_CHECK(err_code); 
+	APP_ERROR_CHECK(err_code);
 }
 
 int datetime_main(void) {
@@ -129,4 +129,3 @@ int datetime_main(void) {
 	datetime_timers_start();
 	return 1;
 }
-
