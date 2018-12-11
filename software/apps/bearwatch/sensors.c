@@ -67,7 +67,7 @@ void sensors_init(void)
   /* Create sensor timers */
   err_code = app_timer_create(&sensor_timer_id, APP_TIMER_MODE_REPEATED, sensor_callback);
   APP_ERROR_CHECK(err_code);
-  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(500), NULL);
+  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(60000), NULL);
   APP_ERROR_CHECK(err_code);
 }
 
