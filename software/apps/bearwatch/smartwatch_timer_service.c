@@ -10,6 +10,9 @@
 // #include "nrf_gpio.h"
 // #include "boards.h"
 #include "nrf_log.h"
+uint8_t hour = 0;
+uint8_t minute = 0;
+uint8_t second = 0;
 
 void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 	// ret_code_t err_code = NRF_SUCCESS;
@@ -35,9 +38,12 @@ void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 			break;
 		case BLE_GATTS_EVT_WRITE:
 			if (p_evt_write->handle == service->char_handle.value_handle) {
-				uint8_t seconds = *p_evt_write->data;
-				uint8_t hours = *(p_evt_write->data + 1);
-				NRF_LOG_INFO("\t %dh%ds", hours, seconds);
+				NRF_LOG_INFO("SYNCHRONIZING \n");
+				second = *p_evt_write->data;
+				minute = *(p_evt_write->data + 1);
+				hour = *(p_evt_write->data + 2);
+
+
 			}
 			break;
 	}
