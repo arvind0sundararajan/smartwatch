@@ -52,7 +52,7 @@ uint32_t smartwatch_ble_service_init(ble_service_params* ble_params, smartwatch_
 
 	err_code = smartwatch_ble_service_add_char(service);
 
-	NRF_LOG_INFO("characteristic added.");
+	// NRF_LOG_INFO("characteristic added.");
 	if (err_code != NRF_SUCCESS) {
 		return NRF_ERROR_NULL;
 	}

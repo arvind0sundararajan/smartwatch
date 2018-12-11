@@ -502,7 +502,7 @@ static void application_timers_start(void)
     //  YOUR_JOB: Start your timers. below is an example of how to start a timer.
     //    ret_code_t err_code;
     //    err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
-    //    APP_ERROR_CHECK(err_code); 
+    //    APP_ERROR_CHECK(err_code);
 
     //    TODO: change to FreeRTOS
 }
@@ -545,7 +545,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             NRF_LOG_INFO("Fast advertising.");
             err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
             APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("ADVERTISIG");
+            NRF_LOG_INFO("ADVERTISING");
             break;
 
         case BLE_ADV_EVT_IDLE:
@@ -786,7 +786,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
     ret_code_t err_code;
     bsp_event_t startup_event;
 
-    printf("%d", BSP_INIT_LEDS);
+    //printf("%d", BSP_INIT_LEDS);
 
     err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
     APP_ERROR_CHECK(err_code);

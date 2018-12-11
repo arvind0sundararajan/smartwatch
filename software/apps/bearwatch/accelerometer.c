@@ -203,7 +203,7 @@ static void accelerometer_callback(void * p_context) {
   // if (err_code == NRF_SUCCESS) {
   //   printf("%f", temp);
   //   // err_code = smartwatch_ble_service_set_char_value(&temperature_service, t);
-  // // APP_ERROR_CHECK(err_code); 
+  // // APP_ERROR_CHECK(err_code);
   // }
   // float humidity = read_humidity();
   // float pres = read_pressure();
@@ -228,7 +228,7 @@ void accelerometer_main (void) {
   APP_ERROR_CHECK(err_code);
 
   err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
-  printf("accelerometer timer creatd");
+  //printf("Accelerometer timer creatd");
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
 }

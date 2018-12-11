@@ -51,15 +51,18 @@ void sensors_init(void)
   printf("dcdcen\n");
   nrf_power_dcdcen_set(1);
   nrf_delay_ms(20);
-  printf("init\n");
+
   si7021_init(&twi_mngr_instance);
-  printf("confi\n");
+  printf("si7021 Initialized! \n");
   si7021_config(si7021_mode0);
-  printf("msinit\n");
+  printf("si7021 configured! \n");
   ms5637_init(&twi_mngr_instance, osr_8192);
-  printf("start\n");
+  printf("ms5637 Initialized! \n");
   ms5637_start();
+  printf("ms5637 start! \n");
   mpu9250_init(&twi_mngr_instance);
+  printf("mpu9250 Initialized! \n");
+
 
   /* Create sensor timers */
   err_code = app_timer_create(&sensor_timer_id, APP_TIMER_MODE_REPEATED, sensor_callback);
@@ -140,9 +143,9 @@ void get_rotation_gyro(float * arr)
 }
 
 static void sensor_callback(void * p_context) {
-  printf("sensor callback");
+  //printf("sensor callback");
   nrf_gpio_pin_toggle(LEDS_SENSOR[0]);
-  printf("gpio done");
+  //printf("gpio done");
   // printf("\tsensor coa\n");
   float* data;
   read_temperature(data);

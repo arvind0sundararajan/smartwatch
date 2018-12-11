@@ -40,7 +40,7 @@ void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 			if (p_evt_write->handle == service->char_handle.value_handle) {
 				uint8_t minute = *p_evt_write->data;
 				uint8_t hour = *(p_evt_write->data + 1);
-				// set_alarm(hour, minute);
+				set_alarm(hour, minute);
 				NRF_LOG_INFO("\t %dh%ds", hour, minute);
 			}
 			break;
