@@ -112,7 +112,6 @@ void services_init(void)
     custom_services[5] = &datetime_service;
     custom_services[6] = &random_data_service;
 
-
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         manager_evt_handler,
