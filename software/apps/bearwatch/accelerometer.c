@@ -164,20 +164,22 @@ static void accelerometer_callback(void * p_context) {
   print_counter++;
   max_min_update_counter++;
   // nrf_delay_ms(10);
-
-  // printf("no of footsteps %d", no_of_footsteps);
-
+	//
+	// char line_0_buffer[16];
+	// sprintf(line_0_buffer, "Footsteps: %d", no_of_footsteps);
+	// display_write(line_0_buffer, DISPLAY_LINE_1);
+	printf("no of footsteps: %d\n", no_of_footsteps);
   // if (no_of_footsteps > 25) {
     smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
   // } else if (no_of_footsteps % 5 == 0) {
     // smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
   // }
 
-  // printf("max: %ld\n", max);
-  // printf("min: %ld\n", min);
-  // printf("sample new: %ld\n", sample_new);
-  // printf("sample old: %ld\n", sample_old);
-  // printf("footstep footstep_threshold: %ld\n", footstep_threshold);
+  printf("max: %ld\n", max);
+  printf("min: %ld\n", min);
+  printf("sample new: %ld\n", sample_new);
+  printf("sample old: %ld\n", sample_old);
+  printf("footstep_threshold: %ld\n", footstep_threshold);
 
   // nrf_delay_ms(10);
   print_counter = 0;
@@ -227,7 +229,7 @@ void accelerometer_main (void) {
   err_code = app_timer_create(&m_accelerometer_timer_id, APP_TIMER_MODE_REPEATED, accelerometer_callback);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
+  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(1), NULL);
   //printf("Accelerometer timer creatd");
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
