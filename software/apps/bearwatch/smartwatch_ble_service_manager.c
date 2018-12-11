@@ -115,7 +115,7 @@ void manager_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
             }
             break;
         case BLE_GAP_EVT_CONNECTED:
-            for (int i = 0; i < NUM_SERVICES;; i ++) {
+            for (int i = 0; i < NUM_SERVICES; i ++) {
                 smartwatch_ble_service* service = custom_services[i];
                 service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
                 uint32_t new_value = i + 0x11;
