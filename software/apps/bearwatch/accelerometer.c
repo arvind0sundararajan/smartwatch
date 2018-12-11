@@ -229,7 +229,7 @@ void accelerometer_main (void) {
   err_code = app_timer_create(&m_accelerometer_timer_id, APP_TIMER_MODE_REPEATED, accelerometer_callback);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(1), NULL);
+  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
   //printf("Accelerometer timer creatd");
   APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
