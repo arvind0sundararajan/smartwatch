@@ -77,8 +77,6 @@ void services_init(void)
         &humidity_service
     );
 
-    /*
-    //
     ble_service_params time_service_params = {
         .base_service_uuid = 0x2000,
         .evt_handler = time_service_evt_handler,
@@ -92,14 +90,13 @@ void services_init(void)
         time_service_evt_handler,
         &time_service
     );
-    */
 
     custom_services[0] = &timer_service;
     custom_services[1] = &footstep_service;
     custom_services[2] = &pressure_service;
     custom_services[3] = &temperature_service;
     custom_services[4] = &humidity_service;
-    //custom_services[5] = &time_service;
+    custom_services[5] = &time_service;
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
