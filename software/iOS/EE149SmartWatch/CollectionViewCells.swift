@@ -305,10 +305,10 @@ class BasicCell : UICollectionViewCell {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllLeft, metrics: nil, views: ["v0": textView]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllRight, metrics: nil, views: ["v0": textView]))
 
-        addSubview(subscribeButton)
-        subscribeButton.sizeToFit()
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[v0]-10-|", options: .alignAllRight, metrics: nil, views: ["v0": subscribeButton]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[v0]-10-|", options: .alignAllBottom, metrics: nil, views: ["v0": subscribeButton]))
+//        addSubview(subscribeButton)
+//        subscribeButton.sizeToFit()
+//        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[v0]-10-|", options: .alignAllRight, metrics: nil, views: ["v0": subscribeButton]))
+//        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[v0]-10-|", options: .alignAllBottom, metrics: nil, views: ["v0": subscribeButton]))
         
         addSubview(valueTextView)
         valueTextView.sizeToFit()
