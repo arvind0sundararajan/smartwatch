@@ -151,7 +151,7 @@ static void timers_init(ret_code_t error_code) {
 }
 
 
-/* Initialize GPIO and LEDs*/
+/* Initialize GPIO, LEDs, button_press*/
 static void gpio_init(ret_code_t error_code) {
     // initialize GPIO driver
     if (!nrfx_gpiote_is_init()) {
@@ -165,9 +165,47 @@ static void gpio_init(ret_code_t error_code) {
         error_code = nrfx_gpiote_out_init(LEDS[i], &out_config);
         APP_ERROR_CHECK(error_code);
     }
+
     return;
 }
 
+// handler called whenever the button is pressed
+void button_press_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
+    switch(pin) {
+        case BUCKLER_SWITCH0: {
+
+            if (nrfx_gpiote_in_is_set(BUCKLER_SWITCH0)) {
+                // start footstep and sensing timers
+                start_footstep_sensing();
+                start_sensing();
+
+            } else{
+                //disable footstep and sensing timers
+                // m_accelerometer_timer_id, sensor_timer_id
+                stop_footstep_sensing();
+                stop_sensing();
+
+                // clear the bottom line
+                display_write("", DISPLAY_LINE_1);
+            }
+
+            break;
+        }
+    }
+}
+
+/* configure the button press hander
+call only after all app timers have been initialized*/
+void configure_button_press(void) {
+    ret_code_t error_code;
+    // configure button
+    // input pin, trigger on either edge, low accuracy (allows low-power operation)
+    nrfx_gpiote_in_config_t in_config = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
+    in_config.pull = NRF_GPIO_PIN_NOPULL;
+    error_code = nrfx_gpiote_in_init(BUCKLER_SWITCH0, &in_config, button_press_handler);
+    APP_ERROR_CHECK(error_code);
+    nrfx_gpiote_in_event_enable(BUCKLER_SWITCH0, true);
+}
 
 /**@brief Function for handling the idle state (main loop).
  *
@@ -213,6 +251,7 @@ int main(void)
     smartwatch_ble_main();
     accelerometer_main();
     datetime_main();
+    configure_button_press();
 
     while (true)
     {

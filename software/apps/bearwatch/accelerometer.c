@@ -132,6 +132,7 @@ uint32_t precision = 50;
 uint32_t max_min_difference = 0;
 
 static void accelerometer_callback(void * p_context) {
+  printf("XL CB\n");
   uint32_t err_code;
   //Low pass filter, averaging the inputs
   for(int i = 0; i < 4; i++){
@@ -193,11 +194,11 @@ static void accelerometer_callback(void * p_context) {
       min = sample_new;
       footstep_threshold = (max + min)/2;
     }
-    max_min_difference = max - min;
 
     max_min_update_counter = 0;
     // smartwatch_ble_service_set_char_value(&footstep_service, footstep_threshold);
   }
+  max_min_difference = max - min;
 
   /** ensors */
   // float temp;
@@ -221,6 +222,20 @@ static void accelerometer_callback(void * p_context) {
 
 APP_TIMER_DEF(m_accelerometer_timer_id);
 
+void start_footstep_sensing(void) {
+  ret_code_t err_code;
+  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
+  APP_ERROR_CHECK(err_code);
+}
+
+void stop_footstep_sensing(void) {
+  printf("stop footstep sensing\n");
+  ret_code_t err_code;
+  err_code = app_timer_stop(m_accelerometer_timer_id);
+  err_code = app_timer_stop(footstep_timer);
+  APP_ERROR_CHECK(err_code);
+}
+
 void accelerometer_main (void) {
 	accelerometer_init();
 
@@ -229,8 +244,5 @@ void accelerometer_main (void) {
   err_code = app_timer_create(&m_accelerometer_timer_id, APP_TIMER_MODE_REPEATED, accelerometer_callback);
   APP_ERROR_CHECK(err_code);
 
-  err_code = app_timer_start(m_accelerometer_timer_id, APP_TIMER_TICKS(10), NULL);
-  //printf("Accelerometer timer creatd");
-  APP_ERROR_CHECK(err_code);
 	//uint32_t err_code
 }

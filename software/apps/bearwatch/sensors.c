@@ -67,8 +67,6 @@ void sensors_init(void)
   /* Create sensor timers */
   err_code = app_timer_create(&sensor_timer_id, APP_TIMER_MODE_REPEATED, sensor_callback);
   APP_ERROR_CHECK(err_code);
-  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(500), NULL);
-  APP_ERROR_CHECK(err_code);
 }
 
 /* Reads temperature off si7021 in Celsius */
@@ -169,6 +167,18 @@ static void sensor_callback(void * p_context) {
   smartwatch_ble_service_set_char_value(&pressure_service, p);
 
   smartwatch_ble_service_set_char_value(&random_data_service, r);
+}
+
+void start_sensing(void) {
+  ret_code_t err_code;
+  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(500), NULL);
+  APP_ERROR_CHECK(err_code);
+}
+
+void stop_sensing(void) {
+  ret_code_t err_code;
+  err_code = app_timer_stop(sensor_timer_id);
+  APP_ERROR_CHECK(err_code);
 }
 
 void sensor_scheduler_event_handler(void *p_event_data, uint16_t event_size) {

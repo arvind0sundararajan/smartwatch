@@ -23,4 +23,8 @@ void update_gyro_measurement();
 void get_rotation_gyro(float * arr);
 
 
+void start_sensing(void);
+
+void stop_sensing(void);
+
 #endif
