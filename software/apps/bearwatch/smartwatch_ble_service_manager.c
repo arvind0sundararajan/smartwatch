@@ -95,7 +95,7 @@ void services_init(void)
         .base_service_uuid = 0x1600,
         .evt_handler = random_data_service_evt_handler,
         .uuid = {
-           { 0xDA, 0xDA, 0xBF, 0xB7, 0xB7, 0xAF, 0xA9, 0x92, 0x7F, 0x5C, 0x58, 0x4E, 0x31, 0x1F, 0x1A, 0x1A }
+           { 0xFD, 0xE1, 0xC5, 0xBA, 0xAD, 0xA3, 0x89, 0x88, 0x87, 0x72, 0x61, 0x55, 0x43, 0x40, 0x0E, 0x01 }
        }
     };
     smartwatch_ble_service_init(&random_data_service_params, &random_data_service);
@@ -111,7 +111,7 @@ void services_init(void)
     custom_services[3] = &temperature_service;
     custom_services[4] = &humidity_service;
     custom_services[5] = &datetime_service;
-
+    custom_services[6] = &random_data_service
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
