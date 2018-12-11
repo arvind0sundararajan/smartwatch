@@ -127,7 +127,7 @@ uint32_t cum_sum = 0;
 uint32_t avg_sum = 0;
 uint32_t sample_old = 0;
 uint32_t sample_new = 0;
-uint32_t precision = 50;
+uint32_t precision = 100;
 
 uint32_t max_min_difference = 0;
 
@@ -152,7 +152,7 @@ static void accelerometer_callback(void * p_context) {
   }
   /* If the newly registered sample is greater than the footstep threshold and less then old sample,
   i.e, negative slope in acceleration graph */
-  if(sample_new > footstep_threshold && max_min_difference > 100 && sample_new < sample_old && !was_footstep){
+  if(sample_new > footstep_threshold && max_min_difference > 150 && sample_new < sample_old && !was_footstep){
     no_of_footsteps++; //increment number of footsteps
     was_footstep = true;
     err_code = app_timer_start(footstep_timer, APP_TIMER_TICKS(500), NULL);
