@@ -1,5 +1,5 @@
-#ifndef BLE_HUMIDITY_SERVICE__
-#define BLE_HUMIDITY_SERVICE__
+#ifndef BLE_TIME_SERVICE__
+#define BLE_TIME_SERVICE__
 
 #include "smartwatch_ble_service.h"
 extern uint8_t hour;

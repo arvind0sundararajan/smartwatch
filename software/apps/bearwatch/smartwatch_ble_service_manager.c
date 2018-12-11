@@ -86,7 +86,7 @@ void services_init(void)
        }
     };
     smartwatch_ble_service_init(&time_service_params, &time_service);
-    NRF_SDH_BLE_OBSERVER(humidity_service_obs,
+    NRF_SDH_BLE_OBSERVER(time_service_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,
         time_service_evt_handler,
         &time_service
