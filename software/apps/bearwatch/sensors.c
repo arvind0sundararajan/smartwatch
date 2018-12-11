@@ -67,7 +67,7 @@ void sensors_init(void)
   /* Create sensor timers */
   err_code = app_timer_create(&sensor_timer_id, APP_TIMER_MODE_REPEATED, sensor_callback);
   APP_ERROR_CHECK(err_code);
-  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(60000), NULL);
+  err_code = app_timer_start(sensor_timer_id, APP_TIMER_TICKS(500), NULL);
   APP_ERROR_CHECK(err_code);
 }
 
@@ -158,13 +158,17 @@ static void sensor_callback(void * p_context) {
   temperature = data[0];
   humidity = data[1];
 
-  uint32_t t, h, p;
+  uint32_t t, h, p, r;
+  float total = temperature + humidity + pressure;
   memcpy(&t, &temperature, sizeof(t));
   memcpy(&h, &humidity, sizeof(h));
   memcpy(&p, &pressure, sizeof(p));
+  memcpy(&r, &total, sizeof(r));
   smartwatch_ble_service_set_char_value(&temperature_service, t);
   smartwatch_ble_service_set_char_value(&humidity_service, h);
   smartwatch_ble_service_set_char_value(&pressure_service, p);
+
+  smartwatch_ble_service_set_char_value(&random_data_service, r);
 }
 
 void sensor_scheduler_event_handler(void *p_event_data, uint16_t event_size) {
