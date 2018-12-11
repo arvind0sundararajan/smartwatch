@@ -872,7 +872,7 @@ void smartwatch_ble_main(void)
 	smartwatch_ble_init();
 
 	/* display test */
-	display_write("BLE initialized", DISPLAY_LINE_0);
+	//display_write("BLE initialized", DISPLAY_LINE_0);
 }
 
 

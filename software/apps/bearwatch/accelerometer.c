@@ -166,9 +166,9 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 	//
-	// char line_0_buffer[16];
-	// sprintf(line_0_buffer, "Footsteps: %d", no_of_footsteps);
-	// display_write(line_0_buffer, DISPLAY_LINE_1);
+	char line_0_buffer[16];
+	sprintf(line_0_buffer, "Steps: %d", no_of_footsteps);
+	display_write(line_0_buffer, DISPLAY_LINE_1);
 	printf("no of footsteps: %d\n", no_of_footsteps);
   // if (no_of_footsteps > 25) {
     smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
