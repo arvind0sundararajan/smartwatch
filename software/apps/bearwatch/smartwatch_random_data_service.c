@@ -11,13 +11,13 @@
 // #include "boards.h"
 #include "nrf_log.h"
 
-void random_data_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
+void random_data_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     // ret_code_t err_code = NRF_SUCCESS;
 
     smartwatch_ble_service* service = (smartwatch_ble_service*) p_context;
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-    if (service != &random_data) {
+    if (service != &random_data_service) {
         return;
     }
 
@@ -37,8 +37,8 @@ void random_data_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
             if (p_evt_write->handle == service->char_handle.value_handle) {
                 uint8_t minute = *p_evt_write->data;
                 uint8_t hour = *(p_evt_write->data + 1);
-                set_alarm(hour, minute);
-                NRF_LOG_INFO("\t %dh%ds", hour, minute);
+                // set_alarm(hour, minute);
+                // NRF_LOG_INFO("\t %dh%ds", hour, minute);
             }
             break;
     }
