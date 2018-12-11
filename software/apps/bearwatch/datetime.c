@@ -12,7 +12,9 @@ Module for datetime functions, updating time, setting alarms.
 #include "app_timer.h"
 
 #include "nrf_delay.h"
+#include "nrf_gpio.h"
 
+#include "buckler.h"
 #include "display.h"
 
 #define DATETIME_TIMER_PERIOD      APP_TIMER_TICKS(1000)          /**< Timer period. timer will expire after 1000 ms */
@@ -64,7 +66,9 @@ void update_time(void) {
 // sound an alarm
 void sound_alarm(void) {
 	printf("Alarm went off.\n");
-	// TODO: fill
+
+	nrf_gpio_pin_toggle(BUCKLER_LED1);
+	nrf_gpio_pin_toggle(BUCKLER_LED2);
 }
 
 /**@brief The function to call when the datetime FreeRTOS timer expires.
@@ -95,10 +99,6 @@ void set_alarm(uint8_t hour, uint8_t minute) {
 	// convert seconds to ticks
 	int num_ticks_until_alarm = APP_TIMER_TICKS(1000*seconds_until_alarm);
 
-	// create an app timer in the future
-	err_code = app_timer_create(&m_datetime_alarm_id, APP_TIMER_MODE_SINGLE_SHOT, datetime_set_alarm_handler);
-	APP_ERROR_CHECK(err_code);
-
 	//start the alarm
 	err_code = app_timer_start(m_datetime_alarm_id, num_ticks_until_alarm, NULL);
 	APP_ERROR_CHECK(err_code);
@@ -107,6 +107,10 @@ void set_alarm(uint8_t hour, uint8_t minute) {
 /* Initialize the datetime timer. */
 static void datetime_timers_init(void) {
 	ret_code_t err_code;
+
+	// create an app timer in the future
+	err_code = app_timer_create(&m_datetime_alarm_id, APP_TIMER_MODE_SINGLE_SHOT, datetime_set_alarm_handler);
+	APP_ERROR_CHECK(err_code);
 
 	err_code = app_timer_create(&m_datetime_id, APP_TIMER_MODE_REPEATED, datetime_update_timer_handler);
 	APP_ERROR_CHECK(err_code);
