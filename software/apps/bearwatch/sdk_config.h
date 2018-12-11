@@ -78,7 +78,7 @@
 #define APP_PWM_ENABLED 1
 #define LOW_POWER_PWM_ENABLED 1
 #define NRFX_PPI_ENABLED 1
-#define PPI_ENABLED 1 
+#define PPI_ENABLED 1
 
 //==========================================================
 // <q> BSP_BTN_BLE_ENABLED  - bsp_btn_ble - Button Control for BLE
@@ -11506,7 +11506,7 @@
 
 // <o> NRF_SDH_BLE_VS_UUID_COUNT - The number of vendor-specific UUIDs.
 #ifndef NRF_SDH_BLE_VS_UUID_COUNT
-#define NRF_SDH_BLE_VS_UUID_COUNT 6
+#define NRF_SDH_BLE_VS_UUID_COUNT 7
 #endif
 
 // <q> NRF_SDH_BLE_SERVICE_CHANGED  - Include the Service Changed characteristic in the Attribute Table.

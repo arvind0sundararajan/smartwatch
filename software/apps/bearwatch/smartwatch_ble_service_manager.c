@@ -34,7 +34,7 @@ void services_init(void)
 
     /* Pressure */
     ble_service_params pressure_service_params = {
-        .base_service_uuid = 0x1600,
+        .base_service_uuid = 0x1700,
         .evt_handler = pressure_service_evt_handler,
         .uuid = {
            { 0xE2, 0xCF, 0xCA, 0xC4, 0xC1, 0xB0, 0xA4, 0x86, 0x73, 0x5A, 0x42, 0x35, 0x35, 0x0F, 0x04, 0x00 }
@@ -49,7 +49,7 @@ void services_init(void)
 
     /* Temp */
     ble_service_params temp_service_params = {
-        .base_service_uuid = 0x1600,
+        .base_service_uuid = 0x1800,
         .evt_handler = temp_service_evt_handler,
         .uuid = {
            { 0xFE, 0xFD, 0xE7, 0xE4, 0xD3, 0xB6, 0x9E, 0x96, 0x87, 0x59, 0x4D, 0x48, 0x34, 0x29, 0x05, 0x05 }
@@ -64,7 +64,7 @@ void services_init(void)
 
     /* Humidity */
     ble_service_params humidity_service_params = {
-        .base_service_uuid = 0x1600,
+        .base_service_uuid = 0x1900,
         .evt_handler = humidity_service_evt_handler,
         .uuid = {
            { 0xEB, 0xDF, 0xB8, 0xB8, 0xAE, 0xA0, 0x8D, 0x79, 0x75, 0x5E, 0x46, 0x43, 0x33, 0x28, 0x1A, 0x18 }
@@ -78,7 +78,7 @@ void services_init(void)
     );
 
     ble_service_params datetime_service_params = {
-        .base_service_uuid = 0x1600,
+        .base_service_uuid = 0x2000,
         .evt_handler = datetime_service_evt_handler,
         .uuid = {
            { 0xDA, 0xDA, 0xBF, 0xB7, 0xB7, 0xAF, 0xA9, 0x92, 0x7F, 0x5C, 0x58, 0x4E, 0x31, 0x1F, 0x1A, 0x1A }
@@ -91,13 +91,27 @@ void services_init(void)
         &datetime_service
     );
 
+    ble_service_params random_data_service_params = {
+        .base_service_uuid = 0x2100,
+        .evt_handler = random_data_service_evt_handler,
+        .uuid = {
+           { 0xFD, 0xE1, 0xC5, 0xBA, 0xAD, 0xA3, 0x89, 0x88, 0x87, 0x72, 0x61, 0x55, 0x43, 0x40, 0x0E, 0x01 }
+       }
+    };
+    smartwatch_ble_service_init(&random_data_service_params, &random_data_service);
+    NRF_SDH_BLE_OBSERVER(random_data_service_obs,
+        BLE_HRS_BLE_OBSERVER_PRIO,
+        random_data_service_evt_handler,
+        &random_data_service
+    );
+
     custom_services[0] = &timer_service;
     custom_services[1] = &footstep_service;
     custom_services[2] = &pressure_service;
     custom_services[3] = &temperature_service;
     custom_services[4] = &humidity_service;
     custom_services[5] = &datetime_service;
-
+    custom_services[5] = &random_data_service;
 
     NRF_SDH_BLE_OBSERVER(manager_obs,
         BLE_HRS_BLE_OBSERVER_PRIO,

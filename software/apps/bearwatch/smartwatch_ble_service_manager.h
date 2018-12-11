@@ -23,6 +23,7 @@
 #include "smartwatch_temp_service.h"
 #include "smartwatch_humidity_service.h"
 #include "smartwatch_datetime_service.h"
+#include "smartwatch_random_data_service.h"
 
 #define NUM_SERVICES NRF_SDH_BLE_VS_UUID_COUNT
 
