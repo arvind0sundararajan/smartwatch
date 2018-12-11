@@ -165,13 +165,13 @@ static void accelerometer_callback(void * p_context) {
   max_min_update_counter++;
   // nrf_delay_ms(10);
 
-  printf("no of footsteps %d", no_of_footsteps);
+  // printf("no of footsteps %d", no_of_footsteps);
 
-  if (no_of_footsteps > 25) {
+  // if (no_of_footsteps > 25) {
     smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
-  } else if (no_of_footsteps % 5 == 0) {
-    smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
-  }
+  // } else if (no_of_footsteps % 5 == 0) {
+    // smartwatch_ble_service_set_char_value(&footstep_service, no_of_footsteps);
+  // }
 
   // printf("max: %ld\n", max);
   // printf("min: %ld\n", min);

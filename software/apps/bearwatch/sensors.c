@@ -19,6 +19,8 @@
 #include "app_scheduler.h"
 #include "nrf_gpio.h"
 
+#include "smartwatch_ble_service_manager.h"
+
 /* TODO; move to init function */
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 5, 0);
 
@@ -144,15 +146,22 @@ static void sensor_callback(void * p_context) {
   // printf("\tsensor coa\n");
   float* data;
   read_temperature(data);
-  float presure = read_pressure();
+  float pressure = read_pressure();
   printf("\t%d\n", (int)data[0]);
   printf("\thumiidyt %d\n", (int)(data[1]));
-  printf("\tpressure %d\n", (int)presure);
+  printf("\tpressure %d\n", (int)pressure);
 
-  // uint32_t t;
-  // memcpy(&t, &temp, sizeof(t));
+  float temperature, humidity;
+  temperature = data[0];
+  humidity = data[1];
 
-  // smartwatch_ble_service_set_char_value(&temperature_service, t);
+  uint32_t t, h, p;
+  memcpy(&t, &temperature, sizeof(t));
+  memcpy(&h, &humidity, sizeof(h));
+  memcpy(&p, &pressure, sizeof(p));
+  smartwatch_ble_service_set_char_value(&temperature_service, t);
+  smartwatch_ble_service_set_char_value(&humidity_service, h);
+  smartwatch_ble_service_set_char_value(&pressure_service, p);
 }
 
 void sensor_scheduler_event_handler(void *p_event_data, uint16_t event_size) {
