@@ -80,6 +80,7 @@
 #include "accelerometer.h"
 #include "smartwatch_ble_main.h"
 #include "sensors.h"
+#include "datetime.h"
 
 // scheduler settings
 #define SCHED_MAX_EVENT_DATA_SIZE 					APP_TIMER_SCHED_EVENT_DATA_SIZE //just a rnadom nubmer for now
@@ -211,6 +212,7 @@ int main(void)
     sensors_init();
     smartwatch_ble_main();
     accelerometer_main();
+    datetime_main();
 
     while (true)
     {
