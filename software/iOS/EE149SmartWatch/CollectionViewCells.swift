@@ -158,31 +158,61 @@ class TimerCell: UICollectionViewCell {
         return picker
     }()
     
+    let timeRemainingView : UITextView = {
+        let view = UITextView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isEditable = false
+        view.isSelectable = false
+        view.font = UIFont.monospacedDigitSystemFont(ofSize: CGFloat(30), weight: .bold)
+        view.text = "0000000000"
+        return view
+    }()
+    
+    var timerSecondsLeft = 0
+    var localTimer : Timer? = nil
+    
     func setupViews() {
         backgroundColor = UIColor.clear
         
-        addSubview(nameLabel)
-        addSubview(startTimerButton)
-        addSubview(timePicker)
+        for subview in self.subviews {
+            subview.removeFromSuperview()
+        }
+        
+        if timerSecondsLeft == 0 {
+            addSubview(nameLabel)
+            addSubview(startTimerButton)
+            addSubview(timePicker)
+            
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0][v1]|", options: .directionLeadingToTrailing, metrics: nil, views: ["v0": nameLabel, "v1": timePicker]))
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[v0][v1]-5-|", options: .alignAllCenterY, metrics: nil, views: ["v0": nameLabel, "v1": startTimerButton]))
+            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[v0]|", options: .alignAllCenterY, metrics: nil, views: ["v0": timePicker]))
+        } else {
+            addSubview(nameLabel)
+            addSubview(timeRemainingView)
+            
+            nameLabel.sizeToFit()
+            NSLayoutConstraint(item: nameLabel, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 5).isActive = true
+            NSLayoutConstraint(item: nameLabel, attribute: .trailing, relatedBy: .lessThanOrEqual, toItem: self, attribute: .trailing, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: nameLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 5).isActive = true
+            
+            timeRemainingView.backgroundColor = .clear
+            timeRemainingView.sizeToFit()
+            NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: timeRemainingView, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: timeRemainingView, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
+            NSLayoutConstraint(item: timeRemainingView, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: timeRemainingView.contentSize.height).isActive = true
+            NSLayoutConstraint(item: timeRemainingView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: timeRemainingView.contentSize.width).isActive = true
+        }
 
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0][v1]|", options: .directionLeadingToTrailing, metrics: nil, views: ["v0": nameLabel, "v1": timePicker]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-5-[v0][v1]-5-|", options: .alignAllCenterY, metrics: nil, views: ["v0": nameLabel, "v1": startTimerButton]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[v0]|", options: .alignAllCenterY, metrics: nil, views: ["v0": timePicker]))
-//
     }
 
     @objc
     func startTimerButtonEvtHandler(sender: UIButton) {
-        if sender.title(for: .normal) == "Start Timer" {
-            sender.setTitle("Starting", for: .normal)
-        } else {
-            sender.setTitle("Start Timer", for: .normal)
-        }
+        sender.setTitle("Start Timer", for: .normal)
         
         let timerAmount = timePicker.countDownDuration
-        if let timerService = collectionView?.services[ViewController.ServiceID.TIMER], let buckler = collectionView?.buckler,
-            let timerChar = timerService.characteristics?[0]
-        {
+//        if let timerService = collectionView?.services[ViewController.ServiceID.TIMER], let buckler = collectionView?.buckler,
+//            let timerChar = timerService.characteristics?[0]
+//        {
             let seconds = timerAmount.magnitude
             print("=====")
             let numHours = Int(seconds/3600)
@@ -192,8 +222,28 @@ class TimerCell: UICollectionViewCell {
             data.append(contentsOf: [numMinutes, UInt8(numHours)])
             print(data)
             print([UInt8](data))
-            buckler.writeValue(data, for: timerChar, type: .withResponse)
+//            buckler.writeValue(data, for: timerChar, type: .withResponse)
             print("======")
+            
+            timerSecondsLeft = Int(seconds)
+            localTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(TimerCell.updateTimeRemaining), userInfo: nil, repeats: true)
+            localTimer?.fire()
+//        }
+    }
+    
+    @objc
+    func updateTimeRemaining() {
+        timerSecondsLeft -= 1
+        if timerSecondsLeft < 0 {
+            localTimer?.invalidate()
+            self.setupViews()
+        } else {
+            let (hours, minutes, seconds) = (timerSecondsLeft/3600, timerSecondsLeft/60 - (timerSecondsLeft/3600)*60, timerSecondsLeft % 60)
+            let hourString = String(format: "%02d", hours)
+            let minuteString = String(format: "%02d", minutes)
+            let secondString = String(format: "%02d", seconds)
+            timeRemainingView.text = "\(hourString):\(minuteString):\(secondString)"
+            self.setupViews()
         }
     }
 }
@@ -249,6 +299,7 @@ class BasicCell : UICollectionViewCell {
         let view = UITextView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isEditable = false
+        view.font = UIFont.systemFont(ofSize: 16)
         return view
     }()
     
@@ -296,6 +347,10 @@ class BasicCell : UICollectionViewCell {
     }()
     
     func setupViews() {
+        for subview in self.subviews {
+            subview.removeFromSuperview()
+        }
+        
         backgroundColor = UIColor.clear
         
         addSubview(textView)
@@ -304,18 +359,18 @@ class BasicCell : UICollectionViewCell {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[v0]-0-|", options: .alignAllBottom, metrics: nil, views: ["v0": textView]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllLeft, metrics: nil, views: ["v0": textView]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[v0]-0-|", options: .alignAllRight, metrics: nil, views: ["v0": textView]))
-
-        addSubview(subscribeButton)
-        subscribeButton.sizeToFit()
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[v0]-10-|", options: .alignAllRight, metrics: nil, views: ["v0": subscribeButton]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[v0]-10-|", options: .alignAllBottom, metrics: nil, views: ["v0": subscribeButton]))
         
         addSubview(valueTextView)
+        
         valueTextView.sizeToFit()
+        let newSize = valueTextView.sizeThatFits(valueTextView.frame.size)
+        let newHeight = newSize.height
+        let newWidth = newSize.width
+        valueTextView.backgroundColor = .yellow
         NSLayoutConstraint(item: valueTextView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: valueTextView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: valueTextView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: valueTextView.contentSize.height+10).isActive = true
-        NSLayoutConstraint(item: valueTextView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: valueTextView.contentSize.width+10).isActive = true
+        NSLayoutConstraint(item: valueTextView, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: newHeight+10).isActive = true
+        NSLayoutConstraint(item: valueTextView, attribute: .width, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: newWidth+10).isActive = true
         
         subscribeButton.addTarget(self, action: #selector(BasicCell.subscribeButtonEvtHandler) , for: .touchUpInside)
     }

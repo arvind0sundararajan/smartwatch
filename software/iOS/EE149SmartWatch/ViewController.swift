@@ -22,11 +22,13 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }()
     
     enum ServiceID: String {
-        case TIMER = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
-        case STEPS = "C4851500-EAF6-4540-9CFA-903DC7037320"
-        case TEMP = "1"
-        case PRESSURE = "2"
-        case HUMIDITY = "3"
+        case TIMER    = "F3641400-00B0-4240-BA50-05CA45BF8ABC"
+        case STEPS    = "C4851500-EAF6-4540-9CFA-903DC7037320"
+        case TEMP     = "05051600-484D-5987-969E-B6D3E4E7FDFE"
+        case PRESSURE = "00041600-3542-5A73-86A4-B0C1C4CACFE2"
+        case HUMIDITY = "181A1600-4346-5E75-798D-A0AEB8B8DFEB"
+        case TIME     = "1A1A1600-4E58-5C7F-92A9-AFB7B7BFDADA"
+        case RANDOM   = "010E1600-5561-7287-8889-A3ADBAC5E1FD"
     }
 
     
@@ -35,15 +37,25 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         ServiceID.TEMP,
         ServiceID.PRESSURE,
         ServiceID.HUMIDITY,
+        ServiceID.RANDOM,
         ServiceID.TIMER
     ]
     private let names = [ServiceID.STEPS: "Footsteps",
                          ServiceID.TEMP: "Temperature",
                          ServiceID.PRESSURE: "Pressure",
                          ServiceID.HUMIDITY: "Humidity",
+                         ServiceID.RANDOM: "Random",
                          ServiceID.TIMER: "Timer"]
     
     var services = [ServiceID:CBService]()
+    
+//    var history : [ServiceID:[UInt32]] = [
+//        ServiceID.TIMER: [UInt32](),
+//        ServiceID.STEPS: [UInt32](),
+//        ServiceID.TEMP: [UInt32](),
+//        ServiceID.PRESSURE: [UInt32](),
+//        ServiceID.HUMIDITY: [UInt32]()
+//    ]
     
     var buckler : CBPeripheral! {
         didSet {
@@ -65,8 +77,12 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         collectionView?.register(BasicCell.self, forCellWithReuseIdentifier: CellId.BasicCell.rawValue)
         
         manager = CBCentralManager.init(delegate: self, queue: nil)
+        
+        // Add to Navigaition Bar
+        
+        self.title = "Connecting…"
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let serviceId = serviceIds[indexPath.item]
         if serviceId == ServiceID.TIMER {
@@ -79,58 +95,17 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         cell.parameter = names[serviceId] ?? "Fuck"
         cell.viewController = self
         cell.serviceId = serviceId
+        cell.notificationOn = true
+    
         return cell
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellId.GraphCell.rawValue, for: indexPath) as! GraphCell
-//        if let data = dataForGraphCells[indexPath.item] {
-//            cell.pointsToDraw = data
-//        } else {
-//            dataForGraphCells[indexPath.item] = createRandomData(for: cell)
-//            cell.pointsToDraw = dataForGraphCells[indexPath.item]!
-//        }
-//        cell.name = names[indexPath.item]
-//        return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return names.count
+        return serviceIds.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 300)
-    }
-    
-    func createRandomData(for cell: GraphCell) -> [CGPoint] {
-        var pointsToDraw = Array<CGPoint>()
-        var randomYValues = Array<Float>()
-        let height = Float(cell.bounds.height)
-        let width = Float(cell.bounds.width)
-        
-        for i in 0..<Int(300) {
-            randomYValues.append(Float(arc4random_uniform(1000) * UInt32(i)))
-        }
-        let max = randomYValues.reduce(-Float.greatestFiniteMagnitude) {
-            if $0 > $1 {
-                return $0
-            }
-            return $1
-        }
-        let min = randomYValues.reduce(Float.greatestFiniteMagnitude) {
-            if $0 > $1 {
-                return $1
-            }
-            return $0
-        }
-        
-        let numPoints = Float(randomYValues.count)
-        
-        let b = height/(1 - min/max)
-        let a = -b/max
-        
-        for (index, yPt) in randomYValues.enumerated() {
-            let xPt  = Float(index)/numPoints*width
-            pointsToDraw.append(CGPoint(x: CGFloat(xPt), y: CGFloat(a*yPt + b)))
-        }
-        return pointsToDraw
+        return CGSize(width: view.frame.width, height: 200)
     }
     
     @objc
@@ -151,9 +126,26 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
             if let basicCell = cell as? BasicCell {
                 if basicCell.serviceId == serviceId {
                     basicCell.valueTextView.text = str
+//                    basicCell.setupViews()
                     return
                 }
             }
+        }
+    }
+    
+    @objc
+    func sendUpdatedTime() {
+        let characteristicOpt = services[ServiceID.TIME]?.characteristics?[0]
+        if let characteristic = characteristicOpt {
+            let date = Date()
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.hour, .minute, .second], from: date)
+            var data = Data(capacity: 3)
+            if let hour = components.hour, let minute = components.minute, let second = components.second {
+                data.append(contentsOf: [UInt8(min(second, 59)), UInt8(min(minute, 59)), UInt8(min(hour, 24))])
+                buckler.writeValue(data, for: characteristic, type: .withResponse)
+            }
+            Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(ViewController.sendUpdatedTime), userInfo: nil, repeats: false)
         }
     }
     
@@ -182,10 +174,12 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        self.title = "Discovering Services"
         peripheral.discoverServices(nil);
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        self.title = "Connecting…"
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: nil, options: nil)
         }
@@ -196,6 +190,7 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
         print("Discover Services")
         if let discoveredServices = peripheral.services {
             for service in discoveredServices {
+                print(service.uuid.uuidString)
                 let serviceIdEnum = ServiceID(rawValue: service.uuid.uuidString)
                 if let serviceId = serviceIdEnum {
                     services[serviceId] = service
@@ -204,37 +199,64 @@ class ViewController: UICollectionViewController, UICollectionViewDelegateFlowLa
             }
         }
         
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
+        self.title = "BearWatch"
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        print("Discovered Characteristics")
-        if let discoveredCharacteristics = service.characteristics {
-            peripheral.setNotifyValue(true, for: discoveredCharacteristics[0])
+        print("Discovered Characteristics \t \(service.uuid.uuidString)")
+        if let discoveredCharacteristic = service.characteristics?[0] {
+            peripheral.setNotifyValue(true, for: discoveredCharacteristic)
+            if let serviceId = ServiceID(rawValue: service.uuid.uuidString) {
+                if serviceId == .TIME {
+                    sendUpdatedTime()
+                }
+            }
         }
+        
+        
     }
     
+    let file = "avg_sum4.csv"
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if var readData = characteristic.value {
+        if let readData = characteristic.value {
             let value = UInt32(littleEndian: readData.withUnsafeBytes( { $0.pointee }))
+            
             if let serviceId = ServiceID(rawValue: characteristic.service.uuid.uuidString) {
-                printValue(str: "\(value)\n", forCell: serviceId)
+//                print(names[serviceId]!)
+                if serviceId == .RANDOM {
+                    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                        let fileUrl = dir.appendingPathComponent(file)
+                        let dataS = "\(value),".data(using: .utf8)
+                        if let fileHandle = try? FileHandle(forWritingTo: fileUrl), let data = dataS {
+                            fileHandle.seekToEndOfFile()
+                            fileHandle.write(data)
+                            fileHandle.closeFile()
+                        }
+                        else {
+                            FileManager.default.createFile(atPath: fileUrl.path, contents: nil, attributes: nil)
+                        }
+                    }
+                }
+                if serviceId == ServiceID.TEMP ||
+                    serviceId == ServiceID.PRESSURE ||
+                    serviceId == ServiceID.HUMIDITY{
+                    let valueF = Float32(bitPattern: value)
+                    let valueS = String(format: "%.2f", valueF)
+                    
+                    if serviceId == .TEMP {
+                        printValue(str: valueS + "˚C", forCell: serviceId)
+                    } else if serviceId == .PRESSURE {
+                         printValue(str: valueS + " mbar", forCell: serviceId)
+                    } else {
+                        printValue(str: valueS + "%", forCell: serviceId)
+                    }
+                } else {
+                    printValue(str: "\(value)\n", forCell: serviceId)
+                }
             } else {
                 print("didUpdateValueFor Not working")
             }
         }
     }
-    
-    /** Timer functions **/
-    @objc
-    func updateTimer() {
-//        for service in services.values {
-//            if let char = service.characteristics?[0] {
-//                buckler.readValue(for: char)
-//            }
-//        }
-    }
-    
-    
 }
 
