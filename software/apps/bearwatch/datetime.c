@@ -6,7 +6,6 @@ Module for datetime functions, updating time, setting alarms.
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
 
 #include "app_error.h"
 #include "app_timer.h"
@@ -21,6 +20,7 @@ time_t *initial_time; //time_t object of current time (seconds past epoch)
 struct tm *current_time_info; //datetime information struct
 
 APP_TIMER_DEF(m_datetime_id);
+APP_TIMER_DEF(m_datetime_alarm_id);
 
 /* initialize the current_time to num seconds since last epoch.
 Initialize the tm object based on this time.
@@ -44,6 +44,11 @@ void update_time(void) {
 	display_write(line_0_buffer, DISPLAY_LINE_0);
 }
 
+
+/* set an alarm in the future. */
+void set_alarm(uint8_t hour, uint8_t minute) {
+	
+}
 
 /**@brief The function to call when the datetime FreeRTOS timer expires.
  *
