@@ -211,12 +211,11 @@ int main(void)
     display_write("", DISPLAY_LINE_0);
     display_write("", DISPLAY_LINE_1);
 
-    printf("sensors\n");
+    
+    smartwatch_ble_main();
     sensors_init();
-    printf("sensors done\n");
     accelerometer_main();
     datetime_main();
-    //smartwatch_ble_main();
 
     while (true)
     {

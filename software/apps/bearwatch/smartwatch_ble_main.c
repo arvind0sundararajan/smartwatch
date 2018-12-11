@@ -547,6 +547,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             NRF_LOG_INFO("Fast advertising.");
             err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
             APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("ADVERTISIG");
             break;
 
         case BLE_ADV_EVT_IDLE:
@@ -845,7 +846,7 @@ static void smartwatch_ble_init(void) {
 	bool erase_bonds;
 
     ble_timers_init();
-    buttons_leds_init(&erase_bonds);
+    // buttons_leds_init(&erase_bonds);
     power_management_init();
     ble_stack_init();
     gap_params_init();
@@ -858,7 +859,7 @@ static void smartwatch_ble_init(void) {
 
     // Start execution.
     NRF_LOG_INFO("Template example started.");
-    // application_timers_start();
+    application_timers_start();
 
     advertising_start(erase_bonds);
 
