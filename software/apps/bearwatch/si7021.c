@@ -138,16 +138,10 @@ int si7021_read_temp_after_RH (float* temp) {
   uint8_t command = Read_Temp_From_Prev_RH;
   uint8_t temp_hum_data[3] = {0, 0, 0};
 
-  printf("Hello\n");
-
   nrf_twi_mngr_transfer_t const read_temp_after_rh[] = {
     NRF_TWI_MNGR_WRITE(SI7021_ADDR, &command, 1, NRF_TWI_MNGR_NO_STOP),
     NRF_TWI_MNGR_READ(SI7021_ADDR, temp_hum_data, 3, 0)
   };
-
-  printf("NRF_twi_mngr_write, read\n");
-  printf("%d\n", NRF_TWI_MNGR_ENABLED);
-
   int error;
   error = nrf_twi_mngr_perform(twi_mngr_instance, NULL, read_temp_after_rh, 2, NULL);
   if (error != NRF_SUCCESS) {
@@ -155,15 +149,11 @@ int si7021_read_temp_after_RH (float* temp) {
     return error;
   }
 
-  printf("nrf_twi_mngr_perform\n");
-
   printf("temp hum data [0] %d\n", temp_hum_data[0]);
   printf("temp hum data [1] %d\n", temp_hum_data[1]);
   printf("temp hum data [2] %d\n", temp_hum_data[2]);
 
   *temp = -46.85 + (175.72 * (((uint32_t) temp_hum_data[0] << 8) | ((uint32_t) temp_hum_data[1] & 0xfc)) / (1 << 16));
-  printf("temperatuer value: %d\n", (int)*temp);
-
   return NRF_SUCCESS;
 }
 //

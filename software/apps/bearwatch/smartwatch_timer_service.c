@@ -38,12 +38,10 @@ void timer_service_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 			break;
 		case BLE_GATTS_EVT_WRITE:
 			if (p_evt_write->handle == service->char_handle.value_handle) {
-				NRF_LOG_INFO("SYNCHRONIZING \n");
-				second = *p_evt_write->data;
-				minute = *(p_evt_write->data + 1);
-				hour = *(p_evt_write->data + 2);
-
-
+				uint8_t minute = *p_evt_write->data;
+				uint8_t hour = *(p_evt_write->data + 1);
+				// set_alarm(hour, minute);
+				NRF_LOG_INFO("\t %dh%ds", hour, minute);
 			}
 			break;
 	}
